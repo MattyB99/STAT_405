@@ -70,7 +70,7 @@ Parking_Citations[1:1000, 1:22] %>%
   summarise(avg = mean(Fine.amount), count = n()) %>%
   subset(Color == "RD" | Color == "GY" | Color =="WH" | Color == "BL" | Color == "BK" | Color == "BN") %>% 
   transmute(Color = Color, avg = avg) %>%
-  ggplot() + aes(x = Color, y = avg, fill = Color) + geom_histogram(stat = "identity") +
+  ggplot() + aes(x = Color, y = avg) + geom_histogram(stat = "identity") +
   theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8)) +
   scale_fill_manual(values = c("Red", "Gray", "White", "Blue", "Black", "Brown"))
 ```
@@ -93,5 +93,19 @@ h_parking <- Parking_Citations%>%filter(Issue.Date %in% holidays)%>%
 h_parking%>%group_by(name)%>%summarise(mean = mean(Fine.amount), sum = sum(Fine.amount), count = n()) 
 ```
 
+```{r}
+dcon <- dbConnect(SQLite(), dbname = "C:/Users/Galle/Desktop/RProjects/STAT 405/STAT 405 Data/data.sqlite")
+dbListTables(dcon)
+
+mydf <- dbSendQuery(conn = dcon, "
+SELECT *
+FROM LA_Weather;
+") %>%
+  dbFetch(-1) %>%
+  filter(PRCP >= .5)
+
+as.Date(mydf$DATE)
+dbDisconnect(dcon)
+```
 
 
