@@ -21,6 +21,9 @@ library(png)
 library(ggimage)
 library(mapdeck)
 library(usethis)
+library(osmdata)
+library(maps)
+library(sf)
 ```
 
 ## cleaning data
@@ -36,3 +39,17 @@ df <- Parking_Citations%>%filter(!is.na(Latitude), !is.na(Fine.amount), Latitude
   left_join(locs)
 saveRDS(df, file = "Parking_Citations_Cleaned.rds")
 ```
+
+```{r}
+setwd("C:/Users/Galle/Desktop/RProjects/STAT 405/STAT 405 Data")
+load("Parking.RData")
+locs <- Parking_Citations %>%
+  filter(!is.na(Latitude), Latitude > 99999) %>%
+  select(Latitude, Longitude)
+coordinates(locs) <- ~ Latitude + Longitude
+proj4string(locs) <- CRS("+init=esri:102645")
+locs <- spTransform(locs,CRS("+init=epsg:4326")) %>%
+  as.data.frame()
+locs2 <- locs[seq(4000000:4100000),]
+```
+
