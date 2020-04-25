@@ -35,12 +35,11 @@ coordinates(locs) <- ~ Latitude + Longitude
 proj4string(locs) <- CRS("+init=esri:102645")
 locs <- spTransform(locs, CRS("+init=epsg:4326"))%>%as.data.frame()%>%filter(Latitude < 0)%>%select(real_lng = Latitude, real_lat = Longitude, Ticket.number = Ticket.number)
 df <- Parking_Citations%>%filter(!is.na(Latitude), !is.na(Fine.amount), Latitude > 99999)%>%
-  left_join(LA_Weather%>%transmute(Issue.Date = format(as.Date(DATE, format = "%m/%d/%Y"), format = "%m/%d/%Y"), PRCP = PRCP, TAVG = TAVG))%>%
   left_join(locs)
 saveRDS(df, file = "Parking_Citations_Cleaned.rds")
 ```
 
-```{r}
+```{r, eval=FALSE, include=FALSE}
 
 ## Creates locations and a heatmap of data on the map of LA
 locs <- Parking_Citations %>%
@@ -51,7 +50,8 @@ proj4string(locs) <- CRS("+init=esri:102645")
 locs <- spTransform(locs,CRS("+init=epsg:4326")) %>%
   as.data.frame()
 locs2 <- locs[seq(4000000:4100000),]
-
+```
+```{r}
 map <- get_map(getbb("Los Angeles"), zoom = 10, map_type = "roadmap")
 ggmap(map) + ## geom_point(aes(x = Latitude, y = Longitude), data = locs2, size = .5, alpha = .05, color = "red") 
   stat_density2d(data = locs2, aes(x = Latitude, y = Longitude, fill = ..level.., alpha = ..level..),
