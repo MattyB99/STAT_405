@@ -38,7 +38,7 @@ proj4string(locs) <- CRS("+init=esri:102645")
 locs <- spTransform(locs, CRS("+init=epsg:4326"))%>%as.data.frame()%>%filter(Latitude < 0)%>%select(real_lng = Latitude, real_lat = Longitude, Ticket.number = Ticket.number)
 df <- Parking_Citations%>%filter(!is.na(Latitude), !is.na(Fine.amount), Latitude > 99999)%>%
   left_join(locs)
-saveRDS(df, file = "Parking_Citations_Cleaned.rds")
+#saveRDS(df, file = "Parking_Citations_Cleaned.rds")
 ```
 
 ```{r eval = FALSE, include=FALSE, echo=FALSE}
