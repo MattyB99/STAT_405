@@ -1,0 +1,38 @@
+---
+title: "Your Project Title"
+author: "Group members"
+output: pdf_document
+#output: html_document
+fontsize: 10pt
+geometry: margin=1in
+---
+
+```{r setup, include=FALSE}
+library(ggmap)
+library(rgdal)
+library(here)
+library(proj4)
+library(magrittr)
+library(dplyr)
+library(ggplot2)
+library(cowplot)
+library(magick)
+library(png)
+library(ggimage)
+library(mapdeck)
+library(usethis)
+```
+
+## cleaning data
+
+```{r cleanup, eval=FALSE, include=FALSE}
+#will not run with eval = FALSE
+locs <- Parking_Citations%>%filter(!is.na(Latitude), !is.na(Fine.amount), Latitude > 99999)%>%select(Latitude, Longitude, Ticket.number)
+coordinates(locs) <- ~ Latitude + Longitude
+proj4string(locs) <- CRS("+init=esri:102645")
+locs <- spTransform(locs, CRS("+init=epsg:4326"))%>%as.data.frame()%>%filter(Latitude < 0)%>%select(real_lng = Latitude, real_lat = Longitude, Ticket.number = Ticket.number)
+df <- Parking_Citations%>%filter(!is.na(Latitude), !is.na(Fine.amount), Latitude > 99999)%>%
+  left_join(LA_Weather%>%transmute(Issue.Date = format(as.Date(DATE, format = "%m/%d/%Y"), format = "%m/%d/%Y"), PRCP = PRCP, TAVG = TAVG))%>%
+  left_join(locs)
+saveRDS(df, file = "Parking_Citations_Cleaned.rds")
+```
