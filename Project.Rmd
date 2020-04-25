@@ -28,7 +28,7 @@ library(sf)
 
 ## cleaning data
 
-```{r cleanup, eval=FALSE, include=FALSE}
+```{r cleanup, eval=FALSE, include=FALSE, echo=FALSE}
 #will not run with eval = FALSE
 locs <- Parking_Citations%>%filter(!is.na(Latitude), !is.na(Fine.amount), Latitude > 99999)%>%select(Latitude, Longitude, Ticket.number)
 coordinates(locs) <- ~ Latitude + Longitude
@@ -39,7 +39,7 @@ df <- Parking_Citations%>%filter(!is.na(Latitude), !is.na(Fine.amount), Latitude
 saveRDS(df, file = "Parking_Citations_Cleaned.rds")
 ```
 
-```{r, eval=FALSE, include=FALSE}
+```{r, eval=FALSE, include=FALSE, echo=FALSE}
 
 ## Creates locations and a heatmap of data on the map of LA
 locs <- Parking_Citations %>%
@@ -51,7 +51,8 @@ locs <- spTransform(locs,CRS("+init=epsg:4326")) %>%
   as.data.frame()
 locs2 <- locs[seq(4000000:4100000),]
 ```
-```{r}
+
+```{r, echo=FALSE}
 map <- get_map(getbb("Los Angeles"), zoom = 10, map_type = "roadmap")
 ggmap(map) + ## geom_point(aes(x = Latitude, y = Longitude), data = locs2, size = .5, alpha = .05, color = "red") 
   stat_density2d(data = locs2, aes(x = Latitude, y = Longitude, fill = ..level.., alpha = ..level..),
@@ -60,7 +61,7 @@ ggmap(map) + ## geom_point(aes(x = Latitude, y = Longitude), data = locs2, size 
   scale_alpha(range = c(0, 1), guide = FALSE)
 ```
 
-```{r}
+```{r, echo=FALSE}
 #Average fine amount by car Color
 Parking_Citations[1:1000, 1:22] %>% 
   filter(!is.na(Fine.amount), !is.na(Color)) %>%
@@ -72,4 +73,24 @@ Parking_Citations[1:1000, 1:22] %>%
   theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8)) +
   scale_fill_manual(values = c("Red", "Gray", "White", "Blue", "Black", "Brown"))
 ```
+
+```{r holidays, echo=FALSE}
+holidays <- c("12/25/2014", "12/25/2015", "12/25/2016", "12/25/2017", "12/25/2018", "12/25/2019", 
+              "12/31/2014", "12/31/2015", "12/31/2016", "12/31/2017", "12/31/2018", "12/31/2019", 
+              "11/27/2014", "11/26/2015", "11/24/2016", "11/23/2017", "11/22/2018", "11/28/2019",
+              "10/31/2014", "10/31/2015", "10/31/2016", "10/31/2017", "10/31/2018", "10/31/2019",
+              "06/04/2014", "06/04/2015", "06/04/2016", "06/04/2017", "06/04/2018", "06/04/2019",
+              "02/14/2014", "02/14/2015", "02/14/2016", "02/14/2017", "02/14/2018", "02/14/2019",
+              "03/17/2014", "03/17/2015", "03/17/2016", "03/17/2017", "03/17/2018", "03/17/2019")
+holiday_names <- data.frame(date= c("02/14", "03/17", "06/04", "10/31", "11/22", "11/23", "11/24", "11/26", "11/28", "12/25", "12/31"), 
+                            name = c("Valentine's", "St. Patricks", "July 4th", "Halloween", rep("Thanksgiving", 5), "Christmas", "New Years"))
+
+h_parking <- Parking_Citations%>%filter(Issue.Date %in% holidays)%>%
+              mutate(date = format(as.Date(Issue.Date, format = "%m/%d/%Y"), format = "%m/%d"))%>%left_join(holiday_names, by = 'date')
+
+
+h_parking%>%group_by(name)%>%summarise(mean = mean(Fine.amount), sum = sum(Fine.amount), count = n()) 
 ```
+
+
+
