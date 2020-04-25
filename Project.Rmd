@@ -40,8 +40,7 @@ df <- Parking_Citations%>%filter(!is.na(Latitude), !is.na(Fine.amount), Latitude
 saveRDS(df, file = "Parking_Citations_Cleaned.rds")
 ```
 
-```{r}
-
+```{r, eval=FALSE, include=FALSE}
 ## Creates locations and a heatmap of data on the map of LA
 setwd("C:/Users/Galle/Desktop/RProjects/STAT 405/STAT 405 Data")
 load("Parking.RData")
