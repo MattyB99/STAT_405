@@ -40,7 +40,8 @@ df <- Parking_Citations%>%filter(!is.na(Latitude), !is.na(Fine.amount), Latitude
 saveRDS(df, file = "Parking_Citations_Cleaned.rds")
 ```
 
-```{r, eval=FALSE, include=FALSE}
+```{r}
+
 ## Creates locations and a heatmap of data on the map of LA
 setwd("C:/Users/Galle/Desktop/RProjects/STAT 405/STAT 405 Data")
 load("Parking.RData")
@@ -61,3 +62,16 @@ ggmap(map) + ## geom_point(aes(x = Latitude, y = Longitude), data = locs2, size 
   scale_alpha(range = c(0, 1), guide = FALSE)
 ```
 
+```{r}
+#Average fine amount by car Color
+Parking_Citations[1:1000, 1:22] %>% 
+  filter(!is.na(Fine.amount), !is.na(Color)) %>%
+  group_by(Color) %>%
+  summarise(avg = mean(Fine.amount), count = n()) %>%
+  subset(Color == "RD" | Color == "GY" | Color =="WH" | Color == "BL" | Color == "BK" | Color == "BN") %>% 
+  transmute(Color = Color, avg = avg) %>%
+  ggplot() + aes(x = Color, y = avg) + geom_histogram(stat = "identity") +
+  theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8)) +
+  scale_fill_manual(values = c("Red", "Gray", "White", "Blue", "Black", "Brown"))
+```
+```
