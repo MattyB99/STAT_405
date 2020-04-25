@@ -41,6 +41,8 @@ saveRDS(df, file = "Parking_Citations_Cleaned.rds")
 ```
 
 ```{r}
+
+## Creates locations and a heatmap of data on the map of LA
 setwd("C:/Users/Galle/Desktop/RProjects/STAT 405/STAT 405 Data")
 load("Parking.RData")
 locs <- Parking_Citations %>%
@@ -51,5 +53,12 @@ proj4string(locs) <- CRS("+init=esri:102645")
 locs <- spTransform(locs,CRS("+init=epsg:4326")) %>%
   as.data.frame()
 locs2 <- locs[seq(4000000:4100000),]
+
+map <- get_map(getbb("Los Angeles"), zoom = 10, map_type = "roadmap")
+ggmap(map) + ## geom_point(aes(x = Latitude, y = Longitude), data = locs2, size = .5, alpha = .05, color = "red") 
+  stat_density2d(data = locs2, aes(x = Latitude, y = Longitude, fill = ..level.., alpha = ..level..),
+               geom = "polygon", size = 0.01, bins = 16) +
+  scale_fill_gradient(low = "red", high = "yellow") +
+  scale_alpha(range = c(0, 1), guide = FALSE)
 ```
 
