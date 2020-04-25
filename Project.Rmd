@@ -70,18 +70,12 @@ Parking_Citations[1:1000, 1:22] %>%
   summarise(avg = mean(Fine.amount), count = n()) %>%
   subset(Color == "RD" | Color == "GY" | Color =="WH" | Color == "BL" | Color == "BK" | Color == "BN") %>% 
   transmute(Color = Color, avg = avg) %>%
-<<<<<<< HEAD
   ggplot() + aes(x = Color, y = avg, fill = Color) + geom_histogram(stat = "identity") +
   labs(title = "Average fine amount by car color", x = "Car Color", y = "Average Fine Amount ($)") +
   theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8),
         legend.position = "none") +
   scale_x_discrete(labels = c("Black", "Blue", "Brown", "Gray", "Red", "White")) +
   scale_fill_manual(values = c("Black", "Blue", "Brown", "Gray", "Red", "White"))
-=======
-  ggplot() + aes(x = Color, y = avg) + geom_histogram(stat = "identity") +
-  theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8)) +
-  scale_fill_manual(values = c("Red", "Gray", "White", "Blue", "Black", "Brown"))
->>>>>>> 030187f4e3c883794cb15108c8408365c3f7113d
 ```
 
 ```{r holidays, echo=FALSE}
