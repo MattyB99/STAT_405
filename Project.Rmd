@@ -82,15 +82,17 @@ holidays <- c("12/25/2014", "12/25/2015", "12/25/2016", "12/25/2017", "12/25/201
               "10/31/2014", "10/31/2015", "10/31/2016", "10/31/2017", "10/31/2018", "10/31/2019",
               "06/04/2014", "06/04/2015", "06/04/2016", "06/04/2017", "06/04/2018", "06/04/2019",
               "02/14/2014", "02/14/2015", "02/14/2016", "02/14/2017", "02/14/2018", "02/14/2019",
-              "03/17/2014", "03/17/2015", "03/17/2016", "03/17/2017", "03/17/2018", "03/17/2019")
-holiday_names <- data.frame(date= c("02/14", "03/17", "06/04", "10/31", "11/22", "11/23", "11/24", "11/26", "11/28", "12/25", "12/31"), 
-                            name = c("Valentine's", "St. Patricks", "July 4th", "Halloween", rep("Thanksgiving", 5), "Christmas", "New Years"))
+              "03/17/2014", "03/17/2015", "03/17/2016", "03/17/2017", "03/17/2018", "03/17/2019",
+              "02/02/2014", "02/01/2015", "02/07/2016", "02/05/2017", "02/04/2018", "02/03/2019")
+holiday_names <- data.frame(date= c("02/14", "03/17", "06/04", "10/31", "11/22", "11/23", "11/24", "11/26","11/27", "11/28", "12/25", "12/31", "02/02", "02/01", "02/07", "02/05", "02/04", "02/03"), 
+                            name = c("Valentine's", "St. Patricks", "July 4th", "Halloween", rep("Thanksgiving", 6), "Christmas", "New Years", rep("Super Bowl Sunday", 6)))
 
 h_parking <- Parking_Citations%>%filter(Issue.Date %in% holidays)%>%
-              mutate(date = format(as.Date(Issue.Date, format = "%m/%d/%Y"), format = "%m/%d"))%>%left_join(holiday_names, by = 'date')
+              mutate(date = format(as.Date(Issue.Date, format = "%m/%d/%Y"), format="%m/%d"))%>%
+              left_join(holiday_names, by = 'date')
 
 
-h_parking%>%group_by(name)%>%summarise(mean = mean(Fine.amount), sum = sum(Fine.amount), count = n()) 
+h_parking%>%group_by(name)%>%summarise(mean = mean(Fine.amount), sum_prop = sum(Fine.amount)/1965659, count = n()) 
 ```
 
 
