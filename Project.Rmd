@@ -27,7 +27,7 @@ library(sf)
 library(grid)
 library(gridBase)
 
-#Parking_Citations <- readRDS(file = "/Users/mattbarclay/Desktop/Junior/Spring/STAT 405/Parking_Citations_Cleaned.rds")
+Parking_Citations <- readRDS(file = "/Users/mattbarclay/Desktop/Junior/Spring/STAT 405/Parking_Citations_Cleaned.rds")
 ```
 
 ## cleaning data
@@ -59,7 +59,7 @@ locs2 <- locs[seq(4000000:4100000),]
 ```{r, echo=FALSE}
 map <- get_map(getbb("Los Angeles"), zoom = 10, map_type = "roadmap")
 ggmap(map) +
-  stat_density2d(data = Parking_Citations_Cleaned[4000000:5000000,], aes(x = real_lng, y = real_lat, fill = ..level.., alpha = ..level..), geom = "polygon", size = 0.01, bins = 16) +
+  stat_density2d(data = Parking_Citations[4000000:5000000,], aes(x = real_lng, y = real_lat, fill = ..level.., alpha = ..level..), geom = "polygon", size = 0.01, bins = 16) +
   scale_fill_gradient(low = "red", high = "yellow") +
   scale_alpha(range = c(0, 1), guide = FALSE)
 ```
