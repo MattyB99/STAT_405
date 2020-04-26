@@ -27,7 +27,7 @@ library(maps)
 library(grid)
 library(gridBase)
 
-#Parking_Citations <- readRDS(file = "/Users/mattbarclay/Desktop/Junior/Spring/STAT 405/Parking_Citations_Cleaned.rds")
+Parking_Citations <- readRDS(file = "Parking_citations_Cleaned.rds")
 ```
 
 ## cleaning data
@@ -59,7 +59,7 @@ locs2 <- locs[seq(4000000:4100000),]
 ```{r, echo=FALSE}
 map <- get_map(getbb("Los Angeles"), zoom = 10, map_type = "roadmap")
 ggmap(map) +
-  stat_density2d(data = Parking_Citations_Cleaned[4000000:5000000,], aes(x = real_lng, y = real_lat, fill = ..level.., alpha = ..level..), geom = "polygon", size = 0.01, bins = 16) +
+  stat_density2d(data = Parking_Citations[4000000:5000000,], aes(x = real_lng, y = real_lat, fill = ..level.., alpha = ..level..), geom = "polygon", size = 0.01, bins = 16) +
   scale_fill_gradient(low = "red", high = "yellow") +
   scale_alpha(range = c(0, 1), guide = FALSE)
 ```
@@ -107,11 +107,10 @@ grid.text(h_parking$name, x = rep(seq(1, 9, length.out = 4), 2), y = c(rep(0, 4)
 
 ```
 
-```{r}
+```{r, echo=FALSE}
 ## creates sql weather comparison graph
 library(RSQLite)
-dcon <- dbConnect(SQLite(), dbname = "C:/Users/Galle/Desktop/RProjects/STAT 405/STAT 405 Data/data.sqlite")
-dbListTables(dcon)
+dcon <- dbConnect(SQLite(), dbname = "data.sqlite")
 
 mydf <- dbSendQuery(conn = dcon, "
 SELECT *
@@ -121,8 +120,8 @@ FROM LA_Weather;
   filter(PRCP >= .5)
 dbDisconnect(dcon)
 
-test <- Parking_Citations_Cleaned %>%
-  filter(as.Date(Parking_Citations_Cleaned$Issue.Date, format = "%m/%d/%Y")
+test <- Parking_Citations %>%
+  filter(as.Date(Parking_Citations$Issue.Date, format = "%m/%d/%Y")
          %in%
           as.Date(mydf$DATE))
 
@@ -134,4 +133,33 @@ ggmap(map) +
 
 ```
 
+```{r, echo=FALSE}
+#Average fine amount by year
+Parking_Citations %>% 
+  filter(!is.na(Issue.Date), !is.na(Fine.amount)) %>%
+  mutate(year = substring(Issue.Date, 7, 10))%>%
+  group_by(year) %>%
+  summarise(avg = mean(Fine.amount), count = n())%>%
+  filter(count > 20000)%>% 
+  ggplot() + aes(x = year, y = avg) + geom_histogram(stat = "identity") +
+  theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8))
+
+#Average fine by Make of car
+Parking_Citations %>% 
+  filter(!is.na(Fine.amount)) %>%
+  group_by(Make) %>%
+  summarise(avg = mean(Fine.amount), count = n())%>%
+  filter(count > 10000) %>%
+  ggplot() + aes(x = Make, y = avg) + geom_histogram(stat = "identity") +
+  theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8))
+
+  
+#Average fine by Make of car no graph  
+Parking_Citations %>% 
+  filter(!is.na(Fine.amount)) %>%
+  group_by(Make) %>%
+  summarise(avg = mean(Fine.amount), count = n())%>%
+  filter(count > 10000)%>% transmute(Make = Make, avg = avg)
+
+```
 
