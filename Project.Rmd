@@ -20,7 +20,6 @@ library(magick)
 library(png)
 library(ggimage)
 library(mapdeck)
-library(usethis)
 library(osmdata)
 library(maps)
 library(sf)
@@ -56,8 +55,8 @@ locs2 <- locs[seq(4000000:4100000),]
 
 ```{r, echo=FALSE}
 map <- get_map(getbb("Los Angeles"), zoom = 10, map_type = "roadmap")
-ggmap(map) + ## geom_point(aes(x = Latitude, y = Longitude), data = locs2, size = .5, alpha = .05, color = "red") 
-  stat_density2d(data = Parking_Citations[4000000:5000000,], aes(x = real_lng, y = real_lat, fill = ..level.., alpha = ..level..), geom = "polygon", size = 0.01, bins = 16) +
+ggmap(map) +
+  stat_density2d(data = Parking_Citations_Cleaned[4000000:5000000,], aes(x = real_lng, y = real_lat, fill = ..level.., alpha = ..level..), geom = "polygon", size = 0.01, bins = 16) +
   scale_fill_gradient(low = "red", high = "yellow") +
   scale_alpha(range = c(0, 1), guide = FALSE)
 ```
@@ -105,6 +104,8 @@ h_parking%>%group_by(name)%>%summarise(mean = mean(Fine.amount), sum_prop = sum(
 ```
 
 ```{r}
+## creates sql weather comparison graph
+library(RSQLite)
 dcon <- dbConnect(SQLite(), dbname = "C:/Users/Galle/Desktop/RProjects/STAT 405/STAT 405 Data/data.sqlite")
 dbListTables(dcon)
 
@@ -114,9 +115,19 @@ FROM LA_Weather;
 ") %>%
   dbFetch(-1) %>%
   filter(PRCP >= .5)
-
-as.Date(mydf$DATE)
 dbDisconnect(dcon)
+
+test <- Parking_Citations_Cleaned %>%
+  filter(as.Date(Parking_Citations_Cleaned$Issue.Date, format = "%m/%d/%Y")
+         %in%
+          as.Date(mydf$DATE))
+
+map <- get_map(getbb("Los Angeles"), zoom = 10, map_type = "roadmap")
+ggmap(map) +
+  stat_density2d(data = test, aes(x = real_lng, y = real_lat, fill = ..level.., alpha = ..level..), geom = "polygon", size = 0.01, bins = 16) +
+  scale_fill_gradient(low = "red", high = "yellow") +
+  scale_alpha(range = c(0, 1), guide = FALSE)
+
 ```
 
 
