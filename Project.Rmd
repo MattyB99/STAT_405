@@ -8,6 +8,7 @@ geometry: margin=1in
 ---
 
 ```{r setup, include=FALSE}
+#library(usethis)
 library(ggmap)
 library(rgdal)
 library(here)
