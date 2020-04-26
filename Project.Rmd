@@ -24,6 +24,8 @@ library(mapdeck)
 library(osmdata)
 library(maps)
 library(sf)
+library(grid)
+library(gridBase)
 
 Parking_Citations <- readRDS(file = "Parking_citations_Cleaned.rds")
 ```
@@ -95,7 +97,14 @@ h_parking <- Parking_Citations%>%filter(Issue.Date %in% holidays)%>%
               left_join(holiday_names, by = 'date')
 
 
-h_parking%>%group_by(name)%>%summarise(mean = mean(Fine.amount), sum_prop = sum(Fine.amount)/1965659, count = n()) 
+h_parking <- h_parking%>%group_by(name)%>%summarise(mean = mean(Fine.amount), sum_prop = sum(Fine.amount)/1965659, count = n()) 
+
+grid.newpage()
+vp <- viewport(height = 4, width = 10, default.units = "cm")
+pushViewport(vp)
+grid.circle(x = rep(seq(1, 9, length.out = 4), 2), y = c(rep(0.5, 4), rep(3.5, 4)), r = h_parking$sum_prop, default.units = "cm", vp = vp)
+grid.text(h_parking$name, x = rep(seq(1, 9, length.out = 4), 2), y = c(rep(0, 4), rep(4, 4)), default.units = "cm", vp = vp, gp = gpar(cex = 0.5))
+
 ```
 
 ```{r, echo=FALSE}
