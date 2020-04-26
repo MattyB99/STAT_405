@@ -27,7 +27,7 @@ library(maps)
 library(grid)
 library(gridBase)
 
-#Parking_Citations <- readRDS(file = "/Users/mattbarclay/Desktop/Junior/Spring/STAT 405/Parking_Citations_Cleaned.rds")
+Parking_Citations <- readRDS(file = "/Users/mattbarclay/Desktop/Junior/Spring/STAT 405/Parking_Citations_Cleaned.rds")
 ```
 
 ## cleaning data
@@ -77,7 +77,7 @@ Parking_Citations[1:1000, 1:22] %>%
   theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8),
         legend.position = "none") +
   scale_x_discrete(labels = c("Black", "Blue", "Brown", "Gray", "Red", "White")) +
-  scale_fill_manual(values = c("Black", "Blue", "Saddle Brown", "Gray", "Red", "White"))
+  scale_fill_manual(values = c("Black", "Blue", "#8B4513", "Gray", "Red", "White"))
 ```
 
 ```{r holidays, echo=FALSE}
