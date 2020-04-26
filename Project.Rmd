@@ -27,7 +27,7 @@ library(maps)
 library(grid)
 library(gridBase)
 
-Parking_Citations <- readRDS(file = "/Users/mattbarclay/Desktop/Junior/Spring/STAT 405/Parking_Citations_Cleaned.rds")
+#Parking_Citations <- readRDS(file = "/Users/mattbarclay/Desktop/Junior/Spring/STAT 405/Parking_Citations_Cleaned.rds")
 ```
 
 ## cleaning data
