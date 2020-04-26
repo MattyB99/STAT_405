@@ -27,7 +27,7 @@ library(sf)
 library(grid)
 library(gridBase)
 
-Parking_Citations <- readRDS(file = "/Users/mattbarclay/Desktop/Junior/Spring/STAT 405/Parking_Citations_Cleaned.rds")
+#Parking_Citations <- readRDS(file = "/Users/mattbarclay/Desktop/Junior/Spring/STAT 405/Parking_Citations_Cleaned.rds")
 ```
 
 ## cleaning data
@@ -110,7 +110,7 @@ grid.text(h_parking$name, x = rep(seq(1, 9, length.out = 4), 2), y = c(rep(0, 4)
 ```{r}
 ## creates sql weather comparison graph
 library(RSQLite)
-dcon <- dbConnect(SQLite(), dbname = "C:/Users/Galle/Desktop/RProjects/STAT 405/STAT 405 Data/data.sqlite")
+dcon <- dbConnect(SQLite(), dbname = "data.sqlite")
 dbListTables(dcon)
 
 mydf <- dbSendQuery(conn = dcon, "
@@ -121,8 +121,8 @@ FROM LA_Weather;
   filter(PRCP >= .5)
 dbDisconnect(dcon)
 
-test <- Parking_Citations_Cleaned %>%
-  filter(as.Date(Parking_Citations_Cleaned$Issue.Date, format = "%m/%d/%Y")
+test <- Parking_Citations%>%
+  filter(as.Date(Parking_Citations$Issue.Date, format = "%m/%d/%Y")
          %in%
           as.Date(mydf$DATE))
 
