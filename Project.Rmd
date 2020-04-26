@@ -23,7 +23,7 @@ library(ggimage)
 library(mapdeck)
 library(osmdata)
 library(maps)
-library(sf)
+#library(sf)
 library(grid)
 library(gridBase)
 
