@@ -135,7 +135,7 @@ ggmap(map) +
 ```
 
 ```{r, echo=FALSE}
-#Average fine by Make of car
+#Average fine by Make of car 
 Parking_Citations %>% 
   filter(!is.na(Fine.amount)) %>%
   group_by(Make) %>%
