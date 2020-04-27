@@ -67,12 +67,10 @@ popViewport(2)
 ```
 
 When we began our analysis, we had to get some idea of what we were dealing with. With no instructions, We first boiled down the data into a more understandble form. The data gave us a good amount of information, and it also gave us a good starting point. The data showed a skewed distrubution over 11 year span. From 2010 to 2014 there were less than 40 parking citations recorded. In 2014 that number increased to 34,000. After that, we saw a drastic 44 percent change into 2015, when 1,541,535 parking citations were recorded. The count peaked at 2,154,321 citations in 2017. This peak accentuated both the steep rise leading up to 2017 and also the suprisingly steep decline afterwards. While this graph gave us a good handle on the numbers, there were questions unanswered about the data collection.The  drastic increase from 2014-2015 may be explained by an attempt by the City of Los Angeles to digitize their citations. But that explanation is contradicted by the equally sharp decline after 2017. This left the question of how many citations did they actually collect? The graph didn't tell us exactly, but it gives us a range of values that captures the true value or something close. Even without the actual answer, this graph highlighted the magnitude of the citaitons in LA.
-```{r dollars per year, echo FALSE}
+```{r dollars per year, echo FALSE, message=FALSE}
 df <- data.frame(Year=c(seq(from=2010, to=2020, by=1), "Total"),
          "Dollars_Collected" =c(730, 630, 2276, 3062, 2371400, 107172874, 130124585,151608139,124738695,75291586,2275, sum(df$Dollars_Collected)))
-y
 df <- as.data.frame(df)
-df
 knitr::kable(df)
 
 ```
@@ -227,9 +225,9 @@ mapdeck(pitch = 45, zoom = 100) %>%
 
 
 
-#####References:
-1. https://la.streetsblog.org/2010/12/13/density-car-ownership-and-what-it-means-for-the-future-of-los-angeles/
-2. https://data.lacity.org/A-Well-Run-City/Parking-Citations/wjz9-h9np
+##### References:
+1. https://la.streetsblog.org/2010/12/13/density-car-ownership-and-what-it-means-for-the-future-of-los-angeles/  
+2. https://data.lacity.org/A-Well-Run-City/Parking-Citations/wjz9-h9np  
 3.
 
 
