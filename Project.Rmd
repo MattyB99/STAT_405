@@ -171,3 +171,19 @@ mapdeck(pitch = 45, zoom = 100) %>%
            colour_range = viridisLite::plasma(6))
 ```
 
+##numer of fines per year
+```{r}
+
+grid.newpage()
+pushViewport(plotViewport(margins = c(5.1, 4.1, 4.1, 2.1)))
+pushViewport(dataViewport(x, y))
+grid.rect(gp=gpar(fill="yellow", alpha=.7))
+grid.text(label="Parking Tickets By Year",x=.5, y=1.05, gp=gpar(fontface="bold", cex=1.5))
+grid.xaxis(at=x)
+grid.yaxis(at=y, gp=gpar(cex=.8))
+grid.lines(x,y, default.units = "native", gp=gpar(lty=8, col="red", lwd=3))
+grid.points(x[1:7], y[1:7], pch=24, size=unit(0.025, "npc"), gp=gpar(fill="red"))
+grid.points(x[8:11], y[8:11], pch = 25, size=unit(0.025, "npc"), gp=gpar(fill="green"))
+popViewport(2)
+```
+
