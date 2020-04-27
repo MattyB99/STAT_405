@@ -27,6 +27,7 @@ library(maps)
 library(grid)
 library(gridBase)
 
+Parking_Citations <- readRDS(file = "Parking_Citations.rds")
 ```
 
 ## cleaning data
@@ -175,7 +176,7 @@ mapdeck(pitch = 45, zoom = 100) %>%
 
 Parking_Citations%>% 
 mutate(Year=format(as.Date(Issue.Date, format="%m/%d/%Y"), format=("%Y"))) ->Parking_Citations
-Parking_Citations$Year <- as.integer(Parking_Citations$Year
+Parking_Citations$Year <- as.integer(Parking_Citations$Year)
                                      
 Parking_Citations %>%
   group_by(Year) %>%
@@ -194,5 +195,14 @@ grid.lines(x,y, default.units = "native", gp=gpar(lty=8, col="red", lwd=3))
 grid.points(x[1:7], y[1:7], pch=24, size=unit(0.025, "npc"), gp=gpar(fill="red"))
 grid.points(x[8:11], y[8:11], pch = 25, size=unit(0.025, "npc"), gp=gpar(fill="green"))
 popViewport(2)
+```
+```{r}
+df <- data.frame(Year=seq(from=2010, to=2020, by=1),
+         "Dollars_Collected" =c(730, 630, 2276, 3062, 2371400, 107172874, 130124585,151608139,124738695,75291586,2275))
+
+df <- as.data.frame(df)
+df
+knitr::kable(df)
+
 ```
 
