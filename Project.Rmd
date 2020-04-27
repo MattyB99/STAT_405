@@ -27,7 +27,6 @@ library(maps)
 library(grid)
 library(gridBase)
 
-Parking_Citations <- readRDS(file = "Parking_Citations.rds")
 ```
 
 ## cleaning data
@@ -172,7 +171,20 @@ mapdeck(pitch = 45, zoom = 100) %>%
 ```
 
 ##numer of fines per year
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+Parking_Citations%>% 
+mutate(Year=format(as.Date(Issue.Date, format="%m/%d/%Y"), format=("%Y"))) ->Parking_Citations
+Parking_Citations$Year <- as.integer(Parking_Citations$Year
+                                     
+Parking_Citations %>%
+  group_by(Year) %>%
+  summarise(count=n())->df
+x <- df$Year
+y <- df$count
+
 
 grid.newpage()
 pushViewport(plotViewport(margins = c(5.1, 4.1, 4.1, 2.1)))
