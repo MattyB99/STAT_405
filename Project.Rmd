@@ -173,6 +173,11 @@ mapdeck(pitch = 45, zoom = 100) %>%
 
 ##numer of fines per year
 ```{r}
+Parking_Citations %>%
+  group_by(Year) %>%
+  summarise(count=n())->df
+x <- df$Year
+y <- df$count
 
 grid.newpage()
 pushViewport(plotViewport(margins = c(5.1, 4.1, 4.1, 2.1)))
