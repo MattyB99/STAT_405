@@ -29,11 +29,14 @@ library(gridBase)
 
 Parking_Citations <- readRDS(file = "Parking_Citations.rds")
 ```
-  ##past tense
-   Alex, Anushi, Matt and Griffin all come from different backrouns and majors. So in disucssions for which dataset we wanted, we dabbled on a whole range of topics like  public health and New York CIty subway data. WHen we came down to our decision, we decided to take on data from another large metropolis, but this time in sunny LA. In Los Angeles, the beautiful beaches, actors, and hollywood homes are magical for people who visit. Yet, despite this LA, traffic is the worst and parking in tourist areas can be a nightmare. So, wherever there is parking, there are rules and parking violations. Unironically, our dataset, Parking_Citations, contains all the details of the 8,502,692 parking violations in Los Angeles. That means we have access to the records that account for 591,316,252 in a 10 year span. With so much money at stake, of course the city of Los Angeles wants to keep track of these records electronically. While that data is imperfect and skewed towards 2018, Parking_Citations presented raw data into our hands. 
+###Introduction
+   Alex, Anushi, Matt and Griffin all come from different backrounds and majors, so in disucssions for which dataset we wanted to analyze, we explored a wide range of topics from public health to the New York City subway We eventually decided to take on data from another large metropolis, but this time in sunny Los Angeles. In Los Angeles, the beautiful beaches, countless celebrities, and hollywood homes are magical for visitors. However, LA traffic is often very bad and parking in tourist areas can be a nightmare. As the second largest city in the United States, there are over 6.4 million vehicles in the Los Angeles urbanized area^1^. Our dataset, Parking_Citations, contains all the details of nearly 10 million parking violations in Los Angeles from 2010 to the present. That means we have access to the records that account for fines totalling close to $600 million. With so much money at stake and the huge volume of data, the city of Los Angeles keeps track of these records electronically. We intend to take this massive amount of data and transform it so that the intricacies of parking violations can be easily understood.
+   
+#####Big Data
+  The raw data was accessed directly from the City of Los Angeles Department of Transportation (LADOT) through the city's Open Data website^2^. The original data set contained 9.97 million rows, each containing details on one parking violation. We identified the fine amount and location data as the most important variables and therefore removed all rows containing empty or NA values in those two columns. This narrowed the amount of rows to about 8.5 million. LADOT uses US Feet coordinates according to the NAD_1983_StatePlane_California projection, which is not easily comparable to standard latitude and longitude values, so our next step was to use **sp** package for R to transform our location data. Our final cleaned data set condained data on 8,502,692 tickets, including information of the time, date, location, vehicle information, parking offense, and more. Although well over the 1 milion row minimum requirement, this large amount of data will allow us to explore the trends in parking violations in LA over a relatively large time frame.
    
    
-   
+***   
 ```{r cleanup, eval=FALSE, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE}
 #will not run with eval = FALSE
 locs <- Parking_Citations%>%filter(!is.na(Latitude), !is.na(Fine.amount), Latitude > 99999)%>%select(Latitude, Longitude, Ticket.number)
@@ -210,4 +213,27 @@ df
 knitr::kable(df)
 
 ```
+
+
+
+
+
+
+
+
+
+#####References:
+1. https://la.streetsblog.org/2010/12/13/density-car-ownership-and-what-it-means-for-the-future-of-los-angeles/
+2. https://data.lacity.org/A-Well-Run-City/Parking-Citations/wjz9-h9np
+3.
+
+
+
+
+
+
+
+
+
+
 
