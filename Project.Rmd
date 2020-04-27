@@ -7,7 +7,7 @@ fontsize: 10pt
 geometry: margin=1in
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
 #library(usethis)
 library(ggmap)
 library(rgdal)
@@ -32,7 +32,7 @@ Parking_Citations <- readRDS(file = "Parking_Citations.rds")
 
 ## cleaning data
 
-```{r cleanup, eval=FALSE, include=FALSE, echo=FALSE}
+```{r cleanup, eval=FALSE, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE}
 #will not run with eval = FALSE
 locs <- Parking_Citations%>%filter(!is.na(Latitude), !is.na(Fine.amount), Latitude > 99999)%>%select(Latitude, Longitude, Ticket.number)
 coordinates(locs) <- ~ Latitude + Longitude
@@ -43,7 +43,7 @@ df <- Parking_Citations%>%filter(!is.na(Latitude), !is.na(Fine.amount), Latitude
 saveRDS(df, file = "Parking_Citations.rds")
 ```
 
-```{r eval = FALSE, include=FALSE, echo=FALSE}
+```{r eval = FALSE, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE}
 
 ## Creates locations and a heatmap of data on the map of LA
 locs <- Parking_Citations %>%
@@ -64,7 +64,7 @@ ggmap(map) +
   scale_alpha(range = c(0, 1), guide = FALSE)
 ```
 
-```{r, echo=FALSE, warning=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 #Average fine amount by car Color
 Parking_Citations[1:1000, 1:22] %>% 
   filter(!is.na(Fine.amount), !is.na(Color)) %>%
@@ -80,7 +80,7 @@ Parking_Citations[1:1000, 1:22] %>%
   scale_fill_manual(values = c("Black", "Blue", "#8B4513", "Gray", "Red", "White"))
 ```
 
-```{r holidays, echo=FALSE}
+```{r holidays, echo=FALSE, message=FALSE, warning=FALSE}
 holidays <- c("12/25/2014", "12/25/2015", "12/25/2016", "12/25/2017", "12/25/2018", "12/25/2019", 
               "12/31/2014", "12/31/2015", "12/31/2016", "12/31/2017", "12/31/2018", "12/31/2019", 
               "11/27/2014", "11/26/2015", "11/24/2016", "11/23/2017", "11/22/2018", "11/28/2019",
@@ -107,7 +107,7 @@ grid.text(h_parking$name, x = rep(seq(1, 9, length.out = 4), 2), y = c(rep(0, 4)
 
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 ## creates sql weather comparison graph
 library(RSQLite)
 dcon <- dbConnect(SQLite(), dbname = "data.sqlite")
@@ -163,7 +163,7 @@ Parking_Citations %>%
   theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8))
 ```
 
-```{r 3D Heatmap}
+```{r 3D Heatmap, echo=FALSE, message=FALSE, warning=FALSE}
 set_token(Sys.getenv("MAPBOX"))
 mapdeck(pitch = 45, zoom = 100) %>%
   add_grid(data = Parking_Citations[1:30000,], lat = "real_lat", lon = "real_lng", 
@@ -172,7 +172,7 @@ mapdeck(pitch = 45, zoom = 100) %>%
 ```
 
 ##numer of fines per year
-```{r}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
 grid.newpage()
 pushViewport(plotViewport(margins = c(5.1, 4.1, 4.1, 2.1)))
