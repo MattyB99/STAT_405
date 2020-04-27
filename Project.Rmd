@@ -173,6 +173,11 @@ mapdeck(pitch = 45, zoom = 100) %>%
 
 ##numer of fines per year
 ```{r}
+
+Parking_Citations%>% 
+mutate(Year=format(as.Date(Issue.Date, format="%m/%d/%Y"), format=("%Y"))) ->Parking_Citations
+Parking_Citations$Year <- as.integer(Parking_Citations$Year
+                                     
 Parking_Citations %>%
   group_by(Year) %>%
   summarise(count=n())->df
