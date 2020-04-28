@@ -1,8 +1,8 @@
 ---
 title: "Your Project Title"
-author: "Group members"
-output: pdf_document
-#output: html_document
+author: "Matthew Barclay, Griffin Coccari, Alex Gallegos, Anushi Singhal"
+#output: pdf_document
+output: html_document
 fontsize: 10pt
 geometry: margin=1in
 ---
@@ -26,6 +26,7 @@ library(maps)
 #library(sf)
 library(grid)
 library(gridBase)
+library(knitr)
 
 Parking_Citations <- readRDS(file = "Parking_Citations.rds")
 ```
@@ -99,6 +100,17 @@ locs <- spTransform(locs,CRS("+init=epsg:4326")) %>%
 locs2 <- locs[seq(4000000:4100000),]
 ```
 
+#### Where do parking violations occur?
+
+```{r 3D Heatmap, echo=FALSE, message=FALSE, warning=FALSE}
+if(knitr::is_html_output()){
+set_token(Sys.getenv("MAPBOX"))
+mapdeck(pitch = 45, zoom = 100) %>%
+  add_grid(data = Parking_Citations[1:30000,], lat = "real_lat", lon = "real_lng", 
+           cell_size = 1000, elevation_scale = 50, layer_id = "grid_layer",
+           colour_range = viridisLite::plasma(6))} else {knitr::include_graphics("3D_map.pdf") }
+```
+
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 map <- get_map(getbb("Los Angeles"), zoom = 10, map_type = "roadmap")
 ggmap(map) +
@@ -106,7 +118,7 @@ ggmap(map) +
   scale_fill_gradient(low = "red", high = "yellow") +
   scale_alpha(range = c(0, 1), guide = FALSE)
 ```
-
+#### Who receives parking citations?
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 #Average fine amount by car Color
 Parking_Citations[1:1000, 1:22] %>% 
@@ -206,13 +218,7 @@ Parking_Citations %>%
   theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8))
 ```
 
-```{r 3D Heatmap, echo=FALSE, message=FALSE, warning=FALSE}
-set_token(Sys.getenv("MAPBOX"))
-mapdeck(pitch = 45, zoom = 100) %>%
-  add_grid(data = Parking_Citations[1:30000,], lat = "real_lat", lon = "real_lng", 
-           cell_size = 1000, elevation_scale = 50, layer_id = "grid_layer",
-           colour_range = viridisLite::plasma(6))
-```
+
 
 
 
