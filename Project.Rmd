@@ -108,7 +108,7 @@ set_token(Sys.getenv("MAPBOX"))
 mapdeck(pitch = 45, zoom = 100) %>%
   add_grid(data = Parking_Citations[1:30000,], lat = "real_lat", lon = "real_lng", 
            cell_size = 1000, elevation_scale = 50, layer_id = "grid_layer",
-           colour_range = viridisLite::plasma(6))} else {knitr::include_graphics("3D_map.pdf") }
+           colour_range = viridisLite::plasma(6))} else {knitr::include_graphics("3D_map.png") }
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
