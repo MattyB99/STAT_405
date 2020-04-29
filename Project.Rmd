@@ -86,16 +86,34 @@ When we began our analysis, we had to get some idea of what we were dealing with
 data.frame(Year=c(seq(from=2010, to=2020, by=1), "Total"),
          "Dollars_Collected" =c(730, 630, 2276, 3062, 2371400, 107172874, 130124585,151608139,124738695,75291586,2275, sum(c(730, 630, 2276, 3062, 2371400, 107172874, 130124585,151608139,124738695,75291586,2275))))%>%knitr::kable()
 
-head(Parking_Citations)
-
 Parking_Citations%>%
   group_by(Violation.Description)%>%
   summarise(count=n())->violations
+##price of most violated and then max fine amount
 
-data.frame(Top_Violations= c("NO Park/STREET ClEAN", "METER EXP", "RED ZONE"), Count=c(2389114, dec[2], dec[3])) %>%
+
+data.frame(Top_Violations= c("NO PARK/STREET CLEAN", "METER EXP", "RED ZONE"), Count=c(2389114, dec[2], dec[3]), fine_amount=c(73,63,93)) %>%
   knitr::kable()
 ## red curb just means no stopping, parking, or standing ##https://ladot.lacity.org/residents/colored-curb-zones
 
+##maximum fine
+Parking_Citations%>%
+ select(Violation.Description, Fine.amount)%>%
+  filter(Fine.amount ==1100)
+
+## the maximum fine amount is for parking in a disabled parking spot with no DP registration
+max(fineamount)
+x<- which(fineamount == 1100)
+
+## what are the hotspots
+
+Parking_Citations %>%
+  select(Location)%>%
+  group_by(Location)%>%
+  summarise(count=n())%>%
+  filter(count==srtloc[1] | count==srtloc[2] | count==srtloc[3] | count==srtloc[4] | count==srtloc[5] | count==srtloc[6] | count==srtloc[8] | count==srtloc[9] |   count==srtloc[10])%>%
+  arrange(desc(count))%>%
+  knitr::kable()
 ```
 
 ```{r cleanup, eval=FALSE, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE}
