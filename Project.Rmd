@@ -86,6 +86,16 @@ When we began our analysis, we had to get some idea of what we were dealing with
 data.frame(Year=c(seq(from=2010, to=2020, by=1), "Total"),
          "Dollars_Collected" =c(730, 630, 2276, 3062, 2371400, 107172874, 130124585,151608139,124738695,75291586,2275, sum(c(730, 630, 2276, 3062, 2371400, 107172874, 130124585,151608139,124738695,75291586,2275))))%>%knitr::kable()
 
+head(Parking_Citations)
+
+Parking_Citations%>%
+  group_by(Violation.Description)%>%
+  summarise(count=n())->violations
+
+data.frame(Top_Violations= c("NO Park/STREET ClEAN", "METER EXP", "RED ZONE"), Count=c(2389114, dec[2], dec[3])) %>%
+  knitr::kable()
+## red curb just means no stopping, parking, or standing ##https://ladot.lacity.org/residents/colored-curb-zones
+
 ```
 
 ```{r cleanup, eval=FALSE, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE}
