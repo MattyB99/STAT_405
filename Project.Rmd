@@ -103,7 +103,6 @@ Parking_Citations%>%
 
 ## the maximum fine amount is for parking in a disabled parking spot with no DP registration
 
-srtloc
 
 ## what are the hotspots
 
@@ -111,10 +110,9 @@ Parking_Citations %>%
   select(Location)%>%
   group_by(Location)%>%
   summarise(count=n())%>%
-  filter(count==srtloc[1] | count==srtloc[2] | count==srtloc[3] | count==srtloc[4] | count==srtloc[5] | count==srtloc[6] | count==srtloc[8] | count==srtloc[9] |   count==srtloc[10])%>%
   arrange(desc(count))%>%
-  knitr::kable()
-##hi
+  head(10)%>% knitr::kable()
+
 ```
 
 ```{r cleanup, eval=FALSE, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE}
