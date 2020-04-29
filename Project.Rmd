@@ -94,7 +94,7 @@ Parking_Citations%>%
 
 data.frame(Top_Violations= c("NO PARK/STREET CLEAN", "METER EXP", "RED ZONE"), Count=c(2389114, 1634877, 635504), fine_amount=c(73,63,93)) %>%
   knitr::kable()
-## red curb just means no stopping, parking, or standing ##https://ladot.lacity.org/residents/colored-curb-zones
+## red curb just means no stopping, parking, or standing 
 
 ##maximum fine
 Parking_Citations%>%
@@ -113,11 +113,18 @@ Parking_Citations %>%
   arrange(desc(count))%>%
   head(10)%>% knitr::kable()
 
+
+
+
 ```
+  Los Angeles is not just a city with horrible traffic, its also a city where it is terribly hard to park, especially in tourist areas, shopping districts, or other special zones. Over the past decade, The City of Los Angeles collected $591,316,252 digitally. The changes in the amount of dollars collected per year reflects the amount of citaitons written as explained above. Out Top_Violations table explains that the top three violations are parking in a street clean area, parking with an experied meter, and parking in a red zone. Street Cleaning happens every day in Los Angeles, albeit on different sides of the roads depending on days of the week. Many drivers will find themselves caught unaware by the relevant signs or just purposely park in a street cleaning area because its easier or they assume that the street cleaner has passed or won't come. The inconvenient nature of this system in Los Angeles not suprisingly results in the most fines. Parking in a red zone is a commonly violated law. A red curb, or red zone, indicates no parking, standing or stopping for public safety reasons^3^.  Parking violations vary in their severity. For example, because violating a red zone parking law is a public safety issue, the fine is more expensive than that of a meter experation ticket, which is stil very expensive! At the very least, do not get caught parking in a disabled vehicle designated spot without justification. That fine will cost you 1100 dollars. 
+  Parking citations by location indicated where the most violations have occured. These violations happen in major hotspots of the city which have heavy tourist footraffick and very little space. The lack of parking forces people to park in residential areas, where there are high chances of fines. 1301 ELectric Ave is a street where people park to visit Long Beach, California's famous Seal Beach. Irving Court is very close to a the Venice Beach boardwalk and the Abbot Keny shopping district. Hawthorne Avenue is the spot just south of the bustling Hollyword Blvd. The Griffith Observatory is also a big hotspot of violations. These big Los Angeles attractions attract more cars than an area can hold, which forces parking in residential neighborhoods. Compounded with the fact that these places are vistied by tourists ensures a high volume of parking citations. 
+
+
 
 ```{r cleanup, eval=FALSE, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE}
 #Average fine amount by year
-Parking_Citations %>% 
+Parking_Citations %>%
   filter(!is.na(Issue.Date), !is.na(Fine.amount)) %>%
   mutate(year = substring(Issue.Date, 7, 10))%>%
   group_by(year) %>%
@@ -289,7 +296,7 @@ grid.raster(readPNG("Pictures/PikPng.com_clock-emoji-png_2003036.png"),
 ##### References:
 1. https://la.streetsblog.org/2010/12/13/density-car-ownership-and-what-it-means-for-the-future-of-los-angeles/  
 2. https://data.lacity.org/A-Well-Run-City/Parking-Citations/wjz9-h9np  
-3.
+3.https://ladot.lacity.org/residents/colored-curb-zones
 
 
 
