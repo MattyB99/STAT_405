@@ -137,7 +137,7 @@ Parking_Citations[1:1000, 1:22] %>%
   scale_x_discrete(labels = c("Black", "Blue", "Brown", "Gray", "Red", "White")) +
   scale_fill_manual(values = c("Black", "Blue", "#8B4513", "Gray", "Red", "White"))
 ```
-
+#### When do violations occur?
 ```{r holidays, echo=FALSE, message=FALSE, warning=FALSE}
 holidays <- c("12/25/2014", "12/25/2015", "12/25/2016", "12/25/2017", "12/25/2018", "12/25/2019", 
               "12/31/2014", "12/31/2015", "12/31/2016", "12/31/2017", "12/31/2018", "12/31/2019", 
@@ -219,8 +219,6 @@ Parking_Citations %>%
   filter(count > 20000)%>% 
   ggplot() + aes(x = year, y = avg) + geom_histogram(stat = "identity") +
   theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8))
-
-
 ```
 
 
