@@ -103,6 +103,8 @@ Parking_Citations%>%
 
 ## the maximum fine amount is for parking in a disabled parking spot with no DP registration
 
+srtloc
+
 ## what are the hotspots
 
 Parking_Citations %>%
