@@ -92,7 +92,7 @@ Parking_Citations%>%
 ##price of most violated and then max fine amount
 
 
-data.frame(Top_Violations= c("NO PARK/STREET CLEAN", "METER EXP", "RED ZONE"), Count=c(2389114, dec[2], dec[3]), fine_amount=c(73,63,93)) %>%
+data.frame(Top_Violations= c("NO PARK/STREET CLEAN", "METER EXP", "RED ZONE"), Count=c(2389114, 1634877, 635504), fine_amount=c(73,63,93)) %>%
   knitr::kable()
 ## red curb just means no stopping, parking, or standing ##https://ladot.lacity.org/residents/colored-curb-zones
 
@@ -102,8 +102,6 @@ Parking_Citations%>%
   filter(Fine.amount ==1100)
 
 ## the maximum fine amount is for parking in a disabled parking spot with no DP registration
-max(fineamount)
-x<- which(fineamount == 1100)
 
 ## what are the hotspots
 
@@ -114,6 +112,7 @@ Parking_Citations %>%
   filter(count==srtloc[1] | count==srtloc[2] | count==srtloc[3] | count==srtloc[4] | count==srtloc[5] | count==srtloc[6] | count==srtloc[8] | count==srtloc[9] |   count==srtloc[10])%>%
   arrange(desc(count))%>%
   knitr::kable()
+##hi
 ```
 
 ```{r cleanup, eval=FALSE, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE}
