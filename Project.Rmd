@@ -285,6 +285,22 @@ grid.raster(readPNG("Pictures/PikPng.com_clock-emoji-png_2003036.png"),
 
 ```
 
+```{r that time of the month, echo=FALSE, message=FALSE, warning=FALSE}
+Parking_Citations%>%mutate(day_of_month = format(as.Date(Issue.Date, format = "%m/%d/%Y"), format="%d"))%>%
+  ggplot() + aes(x = day_of_month) + geom_bar()
+
+Parking_Citations%>%mutate(day_of_month = format(as.Date(Issue.Date, format = "%m/%d/%Y"), format="%j"))%>%
+  group_by(day_of_month)%>%summarize(count = n())%>%
+  ggplot() + aes(x = day_of_month, y = count) + geom_jitter()
+
+Parking_Citations%>%mutate(day_of_month = format(as.Date(Issue.Date, format = "%m/%d/%Y"), format="%A"))%>%
+  ggplot() + aes(x = day_of_month) + geom_bar()
+
+Parking_Citations%>%mutate(day_of_month = format(as.Date(Issue.Date, format = "%m/%d/%Y"), format="%A"))%>%
+  mutate(month = as.integer(format(as.Date(Issue.Date, format = "%m/%d/%Y"), format="%m")))%>%
+  mutate(season = ifelse(3<=month & month<6, "spring", ifelse(6<=month & month<9, "summer", ifelse(9<=month& month<12, "fall","winter"))))%>%
+  ggplot() + aes(x = day_of_month) + geom_bar() + facet_wrap(~season)
+```
 
 ##### References:
 1. https://la.streetsblog.org/2010/12/13/density-car-ownership-and-what-it-means-for-the-future-of-los-angeles/  
