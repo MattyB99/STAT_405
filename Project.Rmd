@@ -52,10 +52,10 @@ if(!knitr::is_html_output()) {knitr::include_graphics("3D_Map.png") }
    
    
 ***   
-#### numer of fines per year
+#### Overview graphs
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-
+#### number of fines per year
 
 Parking_Citations%>% 
 mutate(Year=format(as.Date(Issue.Date, format="%m/%d/%Y"), format=("%Y"))) ->Parking_Citations
@@ -118,6 +118,58 @@ Parking_Citations %>%
 ```
 
 ```{r cleanup, eval=FALSE, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE}
+#Average fine amount by year
+Parking_Citations %>% 
+  filter(!is.na(Issue.Date), !is.na(Fine.amount)) %>%
+  mutate(year = substring(Issue.Date, 7, 10))%>%
+  group_by(year) %>%
+  summarise(avg = mean(Fine.amount), count = n())%>%
+  filter(count > 20000)%>% 
+  ggplot() + aes(x = year, y = avg) + geom_histogram(stat = "identity") +
+  theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8))
+```
+
+#### Who receives parking citations?
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+#Average fine amount by car Color
+Parking_Citations[1:1000, 1:22] %>% 
+  filter(!is.na(Fine.amount), !is.na(Color)) %>%
+  group_by(Color) %>%
+  summarise(avg = mean(Fine.amount), count = n()) %>%
+  subset(Color == "RD" | Color == "GY" | Color =="WH" | Color == "BL" | Color == "BK" | Color == "BN") %>% 
+  transmute(Color = Color, avg = avg) %>%
+  ggplot() + aes(x = Color, y = avg, fill = Color) + geom_histogram(stat = "identity") +
+  labs(title = "Average fine amount by car color", x = "Car Color", y = "Average Fine Amount ($)") +
+  theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8),
+        legend.position = "none") +
+  scale_x_discrete(labels = c("Black", "Blue", "Brown", "Gray", "Red", "White")) +
+  scale_fill_manual(values = c("Black", "Blue", "#8B4513", "Gray", "Red", "White"))
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+#Average fine by Make of car 
+Parking_Citations %>% 
+  filter(!is.na(Fine.amount)) %>%
+  group_by(Make) %>%
+  summarise(avg = mean(Fine.amount), count = n())%>%
+  filter(count > 10000) %>%
+  ggplot() + aes(x = Make, y = avg) + geom_histogram(stat = "identity") +
+  theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8))
+
+  
+#Average fine by Make of car no graph  
+Parking_Citations %>% 
+  filter(!is.na(Fine.amount)) %>%
+  group_by(Make) %>%
+  summarise(avg = mean(Fine.amount), count = n())%>%
+  filter(count > 10000)%>% transmute(Make = Make, avg = avg)
+
+
+```
+
+#### Where do parking violations occur?
+
+```{r cleanup, eval=FALSE, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE}
 #will not run with eval = FALSE
 locs <- Parking_Citations%>%filter(!is.na(Latitude), !is.na(Fine.amount), Latitude > 99999)%>%select(Latitude, Longitude, Ticket.number)
 coordinates(locs) <- ~ Latitude + Longitude
@@ -141,8 +193,6 @@ locs <- spTransform(locs,CRS("+init=epsg:4326")) %>%
 locs2 <- locs[seq(4000000:4100000),]
 ```
 
-#### Where do parking violations occur?
-
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 map <- get_map(getbb("Los Angeles"), zoom = 10, map_type = "roadmap")
 ggmap(map) +
@@ -150,22 +200,34 @@ ggmap(map) +
   scale_fill_gradient(low = "red", high = "yellow") +
   scale_alpha(range = c(0, 1), guide = FALSE)
 ```
-#### Who receives parking citations?
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-#Average fine amount by car Color
-Parking_Citations[1:1000, 1:22] %>% 
-  filter(!is.na(Fine.amount), !is.na(Color)) %>%
-  group_by(Color) %>%
-  summarise(avg = mean(Fine.amount), count = n()) %>%
-  subset(Color == "RD" | Color == "GY" | Color =="WH" | Color == "BL" | Color == "BK" | Color == "BN") %>% 
-  transmute(Color = Color, avg = avg) %>%
-  ggplot() + aes(x = Color, y = avg, fill = Color) + geom_histogram(stat = "identity") +
-  labs(title = "Average fine amount by car color", x = "Car Color", y = "Average Fine Amount ($)") +
-  theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8),
-        legend.position = "none") +
-  scale_x_discrete(labels = c("Black", "Blue", "Brown", "Gray", "Red", "White")) +
-  scale_fill_manual(values = c("Black", "Blue", "#8B4513", "Gray", "Red", "White"))
+## creates sql weather comparison graph
+library(RSQLite)
+dcon <- dbConnect(SQLite(), dbname = "data.sqlite")
+dbListTables(dcon)
+
+mydf <- dbSendQuery(conn = dcon, "
+SELECT *
+FROM LA_Weather;
+") %>%
+  dbFetch(-1) %>%
+  filter(PRCP >= .5)
+dbDisconnect(dcon)
+
+test <- Parking_Citations%>%
+  filter(as.Date(Parking_Citations$Issue.Date, format = "%m/%d/%Y")
+         %in%
+          as.Date(mydf$DATE))
+
+map <- get_map(getbb("Los Angeles"), zoom = 10, map_type = "roadmap")
+ggmap(map) +
+  stat_density2d(data = test, aes(x = real_lng, y = real_lat, fill = ..level.., alpha = ..level..), geom = "polygon", size = 0.01, bins = 16) +
+  scale_fill_gradient(low = "red", high = "yellow") +
+  scale_alpha(range = c(0, 1), guide = FALSE)
+
 ```
+
 #### When do violations occur?
 ```{r holidays, echo=FALSE, message=FALSE, warning=FALSE}
 holidays <- c("12/25/2014", "12/25/2015", "12/25/2016", "12/25/2017", "12/25/2018", "12/25/2019", 
@@ -224,74 +286,6 @@ grid.raster(readPNG("Pictures/PikPng.com_clock-emoji-png_2003036.png"),
 #grid.text(h_parking$name, x = rep(seq(1, 9, length.out = 4), 2), y = c(rep(-1.25, 4), rep(5.25, 4)), default.units = "cm", vp = vp, gp = gpar(cex = 0.5))
 
 ```
-
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
-## creates sql weather comparison graph
-library(RSQLite)
-dcon <- dbConnect(SQLite(), dbname = "data.sqlite")
-dbListTables(dcon)
-
-mydf <- dbSendQuery(conn = dcon, "
-SELECT *
-FROM LA_Weather;
-") %>%
-  dbFetch(-1) %>%
-  filter(PRCP >= .5)
-dbDisconnect(dcon)
-
-test <- Parking_Citations%>%
-  filter(as.Date(Parking_Citations$Issue.Date, format = "%m/%d/%Y")
-         %in%
-          as.Date(mydf$DATE))
-
-map <- get_map(getbb("Los Angeles"), zoom = 10, map_type = "roadmap")
-ggmap(map) +
-  stat_density2d(data = test, aes(x = real_lng, y = real_lat, fill = ..level.., alpha = ..level..), geom = "polygon", size = 0.01, bins = 16) +
-  scale_fill_gradient(low = "red", high = "yellow") +
-  scale_alpha(range = c(0, 1), guide = FALSE)
-
-```
-
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
-#Average fine by Make of car 
-Parking_Citations %>% 
-  filter(!is.na(Fine.amount)) %>%
-  group_by(Make) %>%
-  summarise(avg = mean(Fine.amount), count = n())%>%
-  filter(count > 10000) %>%
-  ggplot() + aes(x = Make, y = avg) + geom_histogram(stat = "identity") +
-  theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8))
-
-  
-#Average fine by Make of car no graph  
-Parking_Citations %>% 
-  filter(!is.na(Fine.amount)) %>%
-  group_by(Make) %>%
-  summarise(avg = mean(Fine.amount), count = n())%>%
-  filter(count > 10000)%>% transmute(Make = Make, avg = avg)
-
-#Average fine amount by year
-Parking_Citations %>% 
-  filter(!is.na(Issue.Date), !is.na(Fine.amount)) %>%
-  mutate(year = substring(Issue.Date, 7, 10))%>%
-  group_by(year) %>%
-  summarise(avg = mean(Fine.amount), count = n())%>%
-  filter(count > 20000)%>% 
-  ggplot() + aes(x = year, y = avg) + geom_histogram(stat = "identity") +
-  theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8))
-```
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ##### References:
