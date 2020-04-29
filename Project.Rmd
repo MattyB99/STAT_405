@@ -186,10 +186,41 @@ h_parking <- Parking_Citations%>%filter(Issue.Date %in% holidays)%>%
 h_parking <- h_parking%>%group_by(name)%>%summarise(mean = mean(Fine.amount), sum_prop = sum(Fine.amount)/1965659, count = n()) 
 
 grid.newpage()
-vp <- viewport(height = 4, width = 10, default.units = "cm")
+pushViewport(plotViewport(margins = c(1, 1, 1, 1)))
+vp <- viewport(layout = grid.layout(2,4, heights = 2, widths = 2, default.units = "cm"))
 pushViewport(vp)
-grid.circle(x = rep(seq(1, 9, length.out = 4), 2), y = c(rep(0.5, 4), rep(3.5, 4)), r = h_parking$sum_prop, default.units = "cm", vp = vp)
-grid.text(h_parking$name, x = rep(seq(1, 9, length.out = 4), 2), y = c(rep(0, 4), rep(4, 4)), default.units = "cm", vp = vp, gp = gpar(cex = 0.5))
+#grid.circle(x = rep(seq(1, 9, length.out = 4), 2), y = c(rep(0.5, 4), rep(3.5, 4)), r = h_parking$sum_prop, default.units = "cm", vp = vp)
+grid.raster(readPNG("Pictures/kisspng-christmas-lights-picture-frames-clip-art-circle-border-5abc7a426f0ea9.2306054415223015064549.png"),
+            width = h_parking$sum_prop[h_parking$name == "Christmas"], 
+            height = h_parking$sum_prop[h_parking$name == "Christmas"], vp = viewport(layout.pos.row = 1, layout.pos.col = 1))
+
+grid.raster(readPNG("Pictures/kisspng-thanksgiving-vector-graphics-clip-art-royalty-free-custom-thanksgiving-buttons-holiday-buttons-cu-5baad5eeb0b234.6955432815379225427238.png"), width = h_parking$sum_prop[h_parking$name == "Thanksgiving"], 
+            height = h_parking$sum_prop[h_parking$name == "Thanksgiving"], vp = viewport(layout.pos.row = 1, layout.pos.col = 2))
+
+grid.raster(readPNG("Pictures/1165821.png"), width = h_parking$sum_prop[h_parking$name == "Super Bowl Sunday"], 
+            height = h_parking$sum_prop[h_parking$name == "Super Bowl Sunday"], vp = viewport(layout.pos.row = 1, layout.pos.col = 3))
+
+grid.raster(readPNG("Pictures/hiclipart.com.png"),
+            width = h_parking$sum_prop[h_parking$name == "July 4th"], 
+            height = h_parking$sum_prop[h_parking$name == "July 4th"], vp = viewport(layout.pos.row = 1, layout.pos.col = 4))
+
+grid.raster(readPNG("Pictures/imgbin-valentine-s-day-desktop-love-hearts-valentine-s-day-promotions-MpsSCTDje0pSvBvJ331Se9gxr.png"),
+            width = h_parking$sum_prop[h_parking$name == "Valentine's"], 
+            height = h_parking$sum_prop[h_parking$name == "Valentine's"], vp = viewport(layout.pos.row = 2, layout.pos.col = 4))
+
+grid.raster(readPNG("Pictures/pngfuel.com.png"),
+            width = h_parking$sum_prop[h_parking$name == "Halloween"], 
+            height = h_parking$sum_prop[h_parking$name == "Halloween"], vp = viewport(layout.pos.row = 2, layout.pos.col = 3))
+
+grid.raster(readPNG("Pictures/pngguru.com.png"),
+            width = h_parking$sum_prop[h_parking$name == "St. Patricks"], 
+            height = h_parking$sum_prop[h_parking$name == "St. Patricks"], vp = viewport(layout.pos.row = 2, layout.pos.col = 2))
+
+grid.raster(readPNG("Pictures/PikPng.com_clock-emoji-png_2003036.png"),
+            width = h_parking$sum_prop[h_parking$name == "New Years"], 
+            height = h_parking$sum_prop[h_parking$name == "New Years"], vp = viewport(layout.pos.row = 2, layout.pos.col = 1))
+
+#grid.text(h_parking$name, x = rep(seq(1, 9, length.out = 4), 2), y = c(rep(-1.25, 4), rep(5.25, 4)), default.units = "cm", vp = vp, gp = gpar(cex = 0.5))
 
 ```
 
