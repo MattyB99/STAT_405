@@ -31,7 +31,7 @@ library(knitr)
 Parking_Citations <- readRDS(file = "Parking_Citations.rds")
 ```
 ### Introduction  
-   Alex, Anushi, Matt and Griffin all come from different backrounds and majors, so in disucssions for which dataset we wanted to analyze, we explored a wide range of topics from public health to the New York City subway We eventually decided to take on data from another large metropolis, but this time in sunny Los Angeles. In Los Angeles, the beautiful beaches, countless celebrities, and hollywood homes are magical for visitors. However, LA traffic is often very bad and parking in tourist areas can be a nightmare. As the second largest city in the United States, there are over 6.4 million vehicles in the Los Angeles urbanized area^1^. Our dataset, Parking_Citations, contains all the details of nearly 10 million parking violations in Los Angeles from 2010 to the present. That means we have access to the records that account for fines totalling close to $600 million. With so much money at stake and the huge volume of data, the city of Los Angeles keeps track of these records electronically. We intend to take this massive amount of data and transform it so that the intricacies of parking violations can be easily understood.
+   Alex, Anushi, Matt and Griffin all come from different backrounds and majors, so in disucssions for which dataset we wanted to analyze, we explored a wide range of topics from public health to the New York City subway We eventually decided to take on data from another large metropolis, but this time in sunny Los Angeles. In Los Angeles, the beautiful beaches, countless celebrities, and hollywood homes are magical for visitors. However, LA traffic is often very bad and parking in tourist areas can be a nightmare. As the second largest city in the United States, there are over 6.4 million vehicles in the Los Angeles urbanized area^1^. Our dataset, Parking_Citations, contains all the details of nearly 10 million parking violations in Los Angeles from 2010 to the present. That means we have access to the records that account for fines totalling close to $600 million. With so much money at stake and the huge volume of data, the city of Los Angeles keeps track of these records electronically. We intend to take this massive amount of data and transform it so that the intricacies of parking violations can be easily understood.  
 
 ```{r 3D Heatmap, echo=FALSE, message=FALSE, warning=FALSE}
 if(knitr::is_html_output()){
@@ -46,9 +46,9 @@ mapdeck(pitch = 45, zoom = 100) %>%
 if(!knitr::is_html_output()) {knitr::include_graphics("3D_Map.png") }
 ```
 
-   
+  
 ##### Big Data  
-  The raw data was accessed directly from the City of Los Angeles Department of Transportation (LADOT) through the city's Open Data website^2^. The original data set contained 9.97 million rows, each containing details on one parking violation. We identified the fine amount and location data as the most important variables and therefore removed all rows containing empty or NA values in those two columns. This narrowed the amount of rows to about 8.5 million. LADOT uses US Feet coordinates according to the NAD_1983_StatePlane_California projection, which is not easily comparable to standard latitude and longitude values, so our next step was to use **sp** package for R to transform our location data. Our final cleaned data set condained data on 8,502,692 tickets, including information of the time, date, location, vehicle information, parking offense, and more. Although well over the 1 milion row minimum requirement, this large amount of data will allow us to explore the trends in parking violations in LA over a relatively large time frame.
+  The raw data was accessed directly from the City of Los Angeles Department of Transportation (LADOT) through the city's Open Data website^2^. The original data set contained 9.97 million rows, each containing details on one parking violation. We identified the fine amount and location data as the most important variables and therefore removed all rows containing empty or NA values in those two columns. This narrowed the amount of rows to about 8.5 million. LADOT uses US Feet coordinates according to the NAD_1983_StatePlane_California projection, which is not easily comparable to standard latitude and longitude values, so our next step was to use **sp** package for R to transform our location data. Our final cleaned data set condained data on 8,502,692 tickets, including information of the time, date, location, vehicle information, parking offense, and more. Although well over the 1 milion row minimum requirement, this large amount of data will allow us to explore the trends in parking violations in LA over a relatively large time frame.  
    
    
 ***   
@@ -112,11 +112,8 @@ Parking_Citations %>%
   summarise(count=n())%>%
   arrange(desc(count))%>%
   head(10)%>% knitr::kable()
-
-
-
-
 ```
+    
   Los Angeles is not just a city with horrible traffic, its also a city where it is terribly hard to park, especially in tourist areas, shopping districts, or other special zones. Over the past decade, The City of Los Angeles collected $591,316,252 digitally. The changes in the amount of dollars collected per year reflects the amount of citaitons written as explained above. Out Top_Violations table explains that the top three violations are parking in a street clean area, parking with an experied meter, and parking in a red zone. Street Cleaning happens every day in Los Angeles, albeit on different sides of the roads depending on days of the week. Many drivers will find themselves caught unaware by the relevant signs or just purposely park in a street cleaning area because its easier or they assume that the street cleaner has passed or won't come. The inconvenient nature of this system in Los Angeles not suprisingly results in the most fines. Parking in a red zone is a commonly violated law. A red curb, or red zone, indicates no parking, standing or stopping for public safety reasons^3^.  Parking violations vary in their severity. For example, because violating a red zone parking law is a public safety issue, the fine is more expensive than that of a meter experation ticket, which is stil very expensive! At the very least, do not get caught parking in a disabled vehicle designated spot without justification. That fine will cost you 1100 dollars. 
   Parking citations by location indicated where the most violations have occured. These violations happen in major hotspots of the city which have heavy tourist footraffick and very little space. The lack of parking forces people to park in residential areas, where there are high chances of fines. 1301 ELectric Ave is a street where people park to visit Long Beach, California's famous Seal Beach. Irving Court is very close to a the Venice Beach boardwalk and the Abbot Keny shopping district. Hawthorne Avenue is the spot just south of the bustling Hollyword Blvd. The Griffith Observatory is also a big hotspot of violations. These big Los Angeles attractions attract more cars than an area can hold, which forces parking in residential neighborhoods. Compounded with the fact that these places are vistied by tourists ensures a high volume of parking citations. 
 
@@ -233,8 +230,12 @@ ggmap(map) +
 
 ```
 
-#### When do violations occur?
-```{r holidays, echo=FALSE, message=FALSE, warning=FALSE}
+#### When do violations occur?  
+
+
+###### Holiday Parking  
+  Major holidays account for some of the busiest travel days in the year, so we decided to investigate how the total amount of money collected on each day was distributed. We selected New Year's Eve, Super Bowl Sunday, Valentine's Day, St. Patrick's Day, July 4^th^, Halloween, Thanksgiving, and Christmas and summed up the fines issued for each day. The totals were then plotted proportionally for each holiday seen below.  
+```{r holidays, echo=FALSE, message=FALSE, warning=FALSE, fig.align="center"}
 holidays <- c("12/25/2014", "12/25/2015", "12/25/2016", "12/25/2017", "12/25/2018", "12/25/2019", 
               "12/31/2014", "12/31/2015", "12/31/2016", "12/31/2017", "12/31/2018", "12/31/2019", 
               "11/27/2014", "11/26/2015", "11/24/2016", "11/23/2017", "11/22/2018", "11/28/2019",
@@ -292,27 +293,60 @@ grid.raster(readPNG("Pictures/PikPng.com_clock-emoji-png_2003036.png"),
 
 ```
 
+Our analysis found a striking difference between the fine amounts for holidays. We observed that holidays typically associated with drinking, New Year's, St. Patrick's Day, and July 4^th^, tended to have more fines issued. We were surprised to find that Christmas and Thanksgiving had the two lowest total fines issued, as we associated these holidays with travel. These lower than expected values could possibly be explained by other variables, however, such as a decrease in LAPD/LADOT staff working on these days or increased leniency. We did expect Halloween to have a large fine amount, as finding legal parking while Trick-or-Treating can be difficult. We expected the Valentines Day's results as well, but were surprised that Super Bowl Sunday was so low, as traveling to parties and drinking often occurs on that day. Super Bowl Sunday, however, is the only holiday that is always on a certain day  of the week, whereas all of the other holidays could fall on any day. This led us to investigate whether the day of the week influenced how citations were issued.  
+
+
+###### Days of the Week  
+  While analyzing which day of the week elicited the most citations, we also decided to group by the season of the year to see if that would affect the total volume of citations issued.  
+  
+```{r that time of the week, echo=FALSE, message=FALSE, warning=FALSE}
+
+Parking_Citations%>%mutate(day_of_month = format(as.Date(Issue.Date, format = "%m/%d/%Y"), format="%u"))%>%
+  mutate(month = as.integer(format(as.Date(Issue.Date, format = "%m/%d/%Y"), format="%m")))%>%
+  mutate(season = ifelse(3<=month & month<6, "Spring", ifelse(6<=month & month<9, "Summer", ifelse(9<=month& month<12, "Fall","Winter"))))%>% mutate(season = factor(season, levels = c("Spring", "Summer", "Fall", "Winter")))%>%
+  ggplot() + aes(x = day_of_month) + geom_bar(aes(fill = season, alpha = day_of_month)) + facet_wrap(~season) + 
+  scale_x_discrete(labels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")) +
+  labs(x = 'Day of the Week', y = 'Total number of citations', title = 'Distribution of tickets throughout the week for each season') +
+  theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8), legend.position = "none") +
+  scale_alpha_discrete(range = c(0.69, 1))+
+  scale_fill_manual(values = c('chartreuse3','darkgoldenrod2','darkorange2','deepskyblue3'))
+```
+  
+Across every season, Tuesday had the greatest volume of citations issued, while the weekends had the fewest. This finding was interesting, because the increased traffic usually generated on weekends did not translate into the volume of citations, but somehow created the opposite effect. Additionally, while we expected to see the citation volume skyrocket in the summer with the influx of tourists ignorant to LA parking laws, summer volumes were overall lower than both the spring and winter. This data did, however, validate the possibility that Super Bowl Sunday had relatively low fines, as Sundays in general received less citations than weekdays.  
+
+###### Time of Day
+  We also explored how citations were issued over the course of the day.   
+  
+```{r that time of the day, echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(data = Parking_Citations)  + labs(title = "Frequency of Parking Tickets Throughout the Day",
+                            x = "Time of Day (Military Time)", y = "Frequency of Tickets") +
+  geom_histogram(aes(x = Issue.time,y = ..density.., fill = ..x..),  binwidth = 100, boundary = 0, closed = "left") + 
+  scale_fill_gradient(low = "Gold", high = "Navy Blue")+ theme(axis.text.x = element_text(hjust = 1, angle = 45), panel.background = element_rect(fill = "gray75")) +
+  scale_x_continuous(breaks = seq(0, 2300, 100), labels = paste(seq(0, 23, 1), "00", sep = ":")) +
+  geom_density(aes(x = Issue.time), size = 1.5) +  guides(fill = FALSE)
+```
+The greatest frequency of citations were issued between 8:00am and 2:00pm, with peaks occurring in the first half of each hour. Unsurprisingly, very few citations were issued in the early hours of the morning, wth the lowest frequency occurring between 5:00-6:00am.
+
+###### Quotas
+It is a common misconception that ticket frequencies increase at the end of each month as many people believe that officers have monthly quotas to fill. We explored whether an increase in ticket frequency was observed at the end of the month by plotting the total count of tickets for each day of the month for all months.
 ```{r that time of the month, echo=FALSE, message=FALSE, warning=FALSE}
 Parking_Citations%>%mutate(day_of_month = format(as.Date(Issue.Date, format = "%m/%d/%Y"), format="%d"))%>%
   ggplot() + aes(x = day_of_month) + geom_bar()
 
-Parking_Citations%>%mutate(day_of_month = format(as.Date(Issue.Date, format = "%m/%d/%Y"), format="%j"))%>%
-  group_by(day_of_month)%>%summarize(count = n())%>%
-  ggplot() + aes(x = day_of_month, y = count) + geom_jitter()
-
-Parking_Citations%>%mutate(day_of_month = format(as.Date(Issue.Date, format = "%m/%d/%Y"), format="%A"))%>%
-  ggplot() + aes(x = day_of_month) + geom_bar()
-
-Parking_Citations%>%mutate(day_of_month = format(as.Date(Issue.Date, format = "%m/%d/%Y"), format="%A"))%>%
-  mutate(month = as.integer(format(as.Date(Issue.Date, format = "%m/%d/%Y"), format="%m")))%>%
-  mutate(season = ifelse(3<=month & month<6, "spring", ifelse(6<=month & month<9, "summer", ifelse(9<=month& month<12, "fall","winter"))))%>%
-  ggplot() + aes(x = day_of_month) + geom_bar() + facet_wrap(~season)
 ```
+
+As seen in the plot, not only did we find no evidence of citation frequency ramping up toward the end of the month, we found that citation frequency tends to remain relatively stable. The extremely low frequency on days that are the 31^st^ of the month is caused by only 7 out of 12 months having 31 days.
+
+
+
+#### Conclusions
+
 
 ##### References:
 1. https://la.streetsblog.org/2010/12/13/density-car-ownership-and-what-it-means-for-the-future-of-los-angeles/  
 2. https://data.lacity.org/A-Well-Run-City/Parking-Citations/wjz9-h9np  
-3.https://ladot.lacity.org/residents/colored-curb-zones
+3. https://ladot.lacity.org/residents/colored-curb-zones  
+4. 
 
 
 
