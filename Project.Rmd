@@ -161,19 +161,14 @@ Parking_Citations %>%
   filter(!is.na(Fine.amount)) %>%
   group_by(Make) %>%
   summarise(avg = mean(Fine.amount), count = n())%>%
-  filter(count > 10000) %>%
-  ggplot() + aes(x = Make, y = avg) + geom_histogram(stat = "identity") +
-  theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8))+
-  labs(title = "Average Fine Amount By Make of Car")
-
-  
-#Average fine by Make of car no graph  
-Parking_Citations %>% 
-  filter(!is.na(Fine.amount)) %>%
-  group_by(Make) %>%
-  summarise(avg = mean(Fine.amount), count = n())%>%
-  filter(count > 10000)%>% transmute(Make = Make, avg = avg)
-
+  filter(count > 50000) %>%
+  ggplot() + aes(x = Make, y = avg, fill = ..x..) + geom_histogram(stat = "identity") +
+  theme(panel.background = element_rect(fill = "gray75"),
+        legend.position = "none") +
+  labs(title = "Average Fine Amount by Manufacturer", x = "Manufacturer", y = "Average Fine Amount ($)") +
+  scale_fill_gradient(low = "Light Sky Blue", high = "Navy Blue") +
+  coord_flip() +
+  scale_x_discrete(labels = c("Acura", "Audi", "BMW", "Cadillac", "Chevy", "Chrysler", "Dodge", "Ford", "GMC", "Honda", "Hyundai", "Infinity", "Jeep", "Kia", "Lexus", "Land Rover", "Mazda", "Mercedez", "Mitsubishi", "Mini Cooper", "Nissan", "Other", "Subaru", "Toyota", "Volkswagon", "Volvo"))
 
 ```
 
