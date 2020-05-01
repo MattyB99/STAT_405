@@ -99,13 +99,13 @@ data.frame(Top_Violations= c("NO PARK/STREET CLEAN", "METER EXP", "RED ZONE"), C
 ##maximum fine
 Parking_Citations%>%
  select(Violation.Description, Fine.amount)%>%
-  filter(Fine.amount ==1100)
+  filter(Fine.amount ==1100)%>%
+  filter(Violation.Description=="DP- RO NOT PRESENT")%>%head(1)%>%knitr::kable()
 
 ## the maximum fine amount is for parking in a disabled parking spot with no DP registration
 
 
 ## what are the hotspots
-
 Parking_Citations %>%
   select(Location)%>%
   group_by(Location)%>%
@@ -144,7 +144,8 @@ Parking_Citations[1:1000, 1:22] %>%
   theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8),
         legend.position = "none") +
   scale_x_discrete(labels = c("Black", "Blue", "Brown", "Gray", "Red", "White")) +
-  scale_fill_manual(values = c("Black", "Blue", "#8B4513", "Gray", "Red", "White"))
+  scale_fill_manual(values = c("Black", "Blue", "#8B4513", "Gray", "Red", "White"))+
+  theme(plot.title = element_text(size=20))
 ```
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
@@ -155,7 +156,8 @@ Parking_Citations %>%
   summarise(avg = mean(Fine.amount), count = n())%>%
   filter(count > 10000) %>%
   ggplot() + aes(x = Make, y = avg) + geom_histogram(stat = "identity") +
-  theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8))
+  theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8))+
+  labs(title = "Average Fine Amount By Make of Car")
 
   
 #Average fine by Make of car no graph  
