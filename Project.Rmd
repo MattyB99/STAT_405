@@ -140,7 +140,7 @@ Parking_Citations %>%
 #### Who receives parking citations?
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 #Average fine amount by car Color
-Parking_Citations[1:1000, 1:22] %>% 
+Parking_Citations %>% 
   filter(!is.na(Fine.amount), !is.na(Color)) %>%
   group_by(Color) %>%
   summarise(avg = mean(Fine.amount), count = n()) %>%
