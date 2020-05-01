@@ -172,7 +172,6 @@ Parking_Citations %>%
 
 ```
 
-
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 ggplot(map_data("state")%>%left_join(Parking_Citations%>%group_by(RP.State.Plate)%>%
                                        summarise(count = n())%>%left_join(read.csv('statename.csv'))%>%filter(!is.na(region), region != "california"))) + 
