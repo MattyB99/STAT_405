@@ -140,14 +140,13 @@ Parking_Citations %>%
 #### Who receives parking citations?
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 #Average fine amount by car Color
-Parking_Citations[1:1000, 1:22] %>% 
+Parking_Citations %>% 
   filter(!is.na(Fine.amount), !is.na(Color)) %>%
   group_by(Color) %>%
-  summarise(avg = mean(Fine.amount), count = n()) %>%
+  summarise(count = n()) %>%
   subset(Color == "RD" | Color == "GY" | Color =="WH" | Color == "BL" | Color == "BK" | Color == "BN") %>% 
-  transmute(Color = Color, avg = avg) %>%
-  ggplot() + aes(x = Color, y = avg, fill = Color) + geom_histogram(stat = "identity") +
-  labs(title = "Average fine amount by car color", x = "Car Color", y = "Average Fine Amount ($)") +
+  ggplot() + aes(x = Color, y = count, fill = Color) + geom_histogram(stat = "identity") +
+  labs(title = "Total Parking Violations by car color", x = "Car Color", y = "Total Parking Violations") +
   theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8),
         legend.position = "none") +
   scale_x_discrete(labels = c("Black", "Blue", "Brown", "Gray", "Red", "White")) +
@@ -170,6 +169,13 @@ Parking_Citations %>%
   coord_flip() +
   scale_x_discrete(labels = c("Acura", "Audi", "BMW", "Cadillac", "Chevy", "Chrysler", "Dodge", "Ford", "GMC", "Honda", "Hyundai", "Infinity", "Jeep", "Kia", "Lexus", "Land Rover", "Mazda", "Mercedez", "Mitsubishi", "Mini Cooper", "Nissan", "Other", "Subaru", "Toyota", "Volkswagon", "Volvo"))
 
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+ggplot(map_data("state")%>%left_join(Parking_Citations%>%group_by(RP.State.Plate)%>%
+                                       summarise(count = n())%>%left_join(read.csv('statename.csv'))%>%filter(!is.na(region), region != "california"))) + 
+  aes(long, lat, group = group) +
+  geom_polygon(aes(fill = count), color = "white") + scale_fill_viridis_c(option = "C")
 ```
 
 #### Where do parking violations occur?
