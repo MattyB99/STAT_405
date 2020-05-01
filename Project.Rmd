@@ -172,6 +172,17 @@ Parking_Citations %>%
 
 ```
 
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+ggplot(map_data("state")%>%left_join(Parking_Citations%>%group_by(RP.State.Plate)%>%
+                                       summarise(count = n())%>%left_join(read.csv('statename.csv'))%>%filter(!is.na(region), region != "california"))) + 
+  aes(long, lat, group = group) +
+  geom_polygon(aes(fill = count), color = "white") + scale_fill_viridis_c(option = "C")
+```
+
+
+
 #### Where do parking violations occur?
 
 ```{r lat/lon, eval=FALSE, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE}
