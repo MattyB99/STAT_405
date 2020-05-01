@@ -172,6 +172,15 @@ Parking_Citations %>%
 
 ```
 
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+ggplot(map_data("state")%>%left_join(Parking_Citations%>%group_by(RP.State.Plate)%>%
+                                       summarise(count = n())%>%left_join(read.csv('statename.csv'))%>%filter(!is.na(region), region != "california"))) + 
+  aes(long, lat, group = group) +
+  geom_polygon(aes(fill = count), color = "white") + scale_fill_viridis_c(option = "C")
+```
+
+
 #### Where do parking violations occur?
 
 ```{r lat/lon, eval=FALSE, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE}
@@ -199,11 +208,13 @@ locs2 <- locs[seq(4000000:4100000),]
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
+## Creates map of LA with citation data heatmap
 map <- get_map(getbb("Los Angeles"), zoom = 10, map_type = "roadmap")
-ggmap(map) +
-  stat_density2d(data = Parking_Citations[4000000:5000000,], aes(x = real_lng, y = real_lat, fill = ..level.., alpha = ..level..), geom = "polygon", size = 0.01, bins = 16) +
+overallMap <- ggmap(map) +
+  stat_density2d(data = Parking_Citations[4000000:4100000,], aes(x = real_lng, y = real_lat, fill = ..level.., alpha = ..level..), geom = "polygon", size = 0.01, bins = 16) +
   scale_fill_gradient(low = "red", high = "yellow") +
   scale_alpha(range = c(0, 1), guide = FALSE)
+overallMap
 ```
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
@@ -220,16 +231,44 @@ FROM LA_Weather;
   filter(PRCP >= .5)
 dbDisconnect(dcon)
 
-test <- Parking_Citations%>%
+weather <- Parking_Citations%>%
   filter(as.Date(Parking_Citations$Issue.Date, format = "%m/%d/%Y")
          %in%
           as.Date(mydf$DATE))
 
 map <- get_map(getbb("Los Angeles"), zoom = 10, map_type = "roadmap")
-ggmap(map) +
-  stat_density2d(data = test, aes(x = real_lng, y = real_lat, fill = ..level.., alpha = ..level..), geom = "polygon", size = 0.01, bins = 16) +
+weatherMap <- ggmap(map) +
+  stat_density2d(data = weather, aes(x = real_lng, y = real_lat, fill = ..level.., alpha = ..level..), geom = "polygon", size = 0.01, bins = 16) +
   scale_fill_gradient(low = "red", high = "yellow") +
   scale_alpha(range = c(0, 1), guide = FALSE)
+weatherMap
+```
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE}
+library(RSQLite)
+dcon <- dbConnect(SQLite(), dbname = "crime.db")
+dbListFields(dcon, "Crime_Data_from_2010_to_2019")
+df <- dbSendQuery(dcon, "
+SELECT field27, field28
+FROM Crime_Data_from_2010_to_2019;
+") %>%
+  dbFetch(-1)
+df <- df[-1,]
+df <- df[1:100000,]
+
+
+
+df$field27 <- as.numeric(df$field27)
+df$field28 <- as.numeric(df$field28)
+dbDisconnect(dcon)
+
+map <- get_map(getbb("Los Angeles"), zoom = 10, map_type = "roadmap")
+crimeMap <- ggmap(map) +
+  stat_density2d(data = df, aes(x = field28, y = field27, fill = ..level.., alpha = ..level..),
+                 geom = "polygon", size = 0.01, bins = 16) +
+  scale_fill_gradient(low = "red", high = "yellow") +
+  scale_alpha(range = c(0, 1), guide = FALSE)
+crimeMap
 
 ```
 
@@ -361,7 +400,6 @@ Parking_Citations%>%mutate(day_of_month = format(as.Date(Issue.Date, format = "%
 ```
 
 As seen in the plot, not only did we find no evidence of citation frequency ramping up toward the end of the month, we found that citation frequency tends to remain relatively stable. The extremely low frequency on days that are the 31^st^ of the month is caused by only 7 out of 12 months having 31 days.
-
 
 
 #### Conclusions
