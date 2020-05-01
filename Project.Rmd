@@ -362,7 +362,7 @@ The greatest frequency of citations were issued between 8:00am and 2:00pm, with 
 It is a common misconception that ticket frequencies increase at the end of each month as many people believe that officers have monthly quotas to fill. We explored whether an increase in ticket frequency was observed at the end of the month by plotting the total count of tickets for each day of the month for all months.
 ```{r that time of the month, echo=FALSE, message=FALSE, warning=FALSE}
 Parking_Citations%>%mutate(day_of_month = format(as.Date(Issue.Date, format = "%m/%d/%Y"), format="%d"))%>%
-  ggplot() + aes(x = day_of_month) + geom_bar()
+  ggplot() + aes(x = day_of_month, fill = day_of_month) + geom_bar() + labs(x = "Day of the Month", y = "Total Number of Citations", title = "Citations over the Month") + scale_fill_manual(values = c(rep("dark green", 27), rep("red", 4))) + guides(fill = FALSE)
 
 ```
 
