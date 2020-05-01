@@ -1,6 +1,6 @@
 ---
 title: "Your Project Title"
-author: "Group members"
+author: "Matthew Barclay, Griffin Coccari, Alex Gallegos, Anushi Singhal"
 output: pdf_document
 fontsize: 10pt
 geometry: margin=1in
@@ -25,13 +25,161 @@ library(maps)
 #library(sf)
 library(grid)
 library(gridBase)
+library(knitr)
 
 Parking_Citations <- readRDS(file = "Parking_Citations.rds")
 ```
+### Introduction  
+   Alex, Anushi, Matt and Griffin all come from different backrounds and majors, so in disucssions for which dataset we wanted to analyze, we explored a wide range of topics from public health to the New York City subway We eventually decided to take on data from another large metropolis, but this time in sunny Los Angeles. In Los Angeles, the beautiful beaches, countless celebrities, and hollywood homes are magical for visitors. However, LA traffic is often very bad and parking in tourist areas can be a nightmare. As the second largest city in the United States, there are over 6.4 million vehicles in the Los Angeles urbanized area^1^. Our dataset, Parking_Citations, contains all the details of nearly 10 million parking violations in Los Angeles from 2010 to the present. That means we have access to the records that account for fines totalling close to $600 million. With so much money at stake and the huge volume of data, the city of Los Angeles keeps track of these records electronically. We intend to take this massive amount of data and transform it so that the intricacies of parking violations can be easily understood.  
 
-## cleaning data
+```{r 3D Heatmap, echo=FALSE, message=FALSE, warning=FALSE}
+if(knitr::is_html_output()){
+set_token(Sys.getenv("MAPBOX"))
+mapdeck(pitch = 45, zoom = 100) %>%
+  add_grid(data = Parking_Citations[1:30000,], lat = "real_lat", lon = "real_lng", 
+           cell_size = 1000, elevation_scale = 50, layer_id = "grid_layer",
+           colour_range = viridisLite::plasma(6))} 
+```
+
+```{r 3D_Map, echo=FALSE, out.width="0.5\\linewidth", out.height="0.5\\linewidth", fig.align="center", message=FALSE, warning=FALSE}
+if(!knitr::is_html_output()) {knitr::include_graphics("3D_Map.png") }
+```
+
+  
+##### Big Data  
+  The raw data was accessed directly from the City of Los Angeles Department of Transportation (LADOT) through the city's Open Data website^2^. The original data set contained 9.97 million rows, each containing details on one parking violation. We identified the fine amount and location data as the most important variables and therefore removed all rows containing empty or NA values in those two columns. This narrowed the amount of rows to about 8.5 million. LADOT uses US Feet coordinates according to the NAD_1983_StatePlane_California projection, which is not easily comparable to standard latitude and longitude values, so our next step was to use **sp** package for R to transform our location data. Our final cleaned data set contained data on 8,502,692 tickets, including information of the time, date, location, vehicle information, parking offense, and more. Although well over the 1 milion row minimum requirement, this large amount of data will allow us to explore the trends in parking violations in LA over a relatively large time frame.  
+   
+   
+***   
+#### Overview graphs
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+#### number of fines per year
+
+Parking_Citations%>% 
+mutate(Year=format(as.Date(Issue.Date, format="%m/%d/%Y"), format=("%Y"))) ->Parking_Citations
+Parking_Citations$Year <- as.integer(Parking_Citations$Year)
+                                     
+Parking_Citations %>%
+  group_by(Year) %>%
+  summarise(count=n())->df
+x <- df$Year
+y <- df$count
+
+
+grid.newpage()
+pushViewport(plotViewport(margins = c(5.1, 4.1, 4.1, 2.1)))
+pushViewport(dataViewport(x, y))
+grid.rect(gp=gpar(fill="yellow", alpha=.7))
+grid.text(label="Parking Citations By Year",x=.5, y=1.05, gp=gpar(fontface="bold", cex=1.5))
+grid.xaxis(at=x)
+grid.yaxis(at=y, gp=gpar(cex=.8))
+grid.lines(x,y, default.units = "native", gp=gpar(lty=8, col="red", lwd=3))
+grid.points(x[1:7], y[1:7], pch=24, size=unit(0.025, "npc"), gp=gpar(fill="red"))
+grid.points(x[8:11], y[8:11], pch = 25, size=unit(0.025, "npc"), gp=gpar(fill="green"))
+popViewport(2)
+```
+
+When we began our analysis, we had to get some idea of what we were dealing with. With no instructions, We first boiled down the data into a more understandble form. The data gave us a good amount of information, and it also gave us a good starting point. The data showed a skewed distrubution over 11 year span. From 2010 to 2014 there were less than 40 parking citations recorded. In 2014 that number increased to 34,000. After that, we saw a drastic 44 percent change into 2015, when 1,541,535 parking citations were recorded. The count peaked at 2,154,321 citations in 2017. This peak accentuated both the steep rise leading up to 2017 and also the suprisingly steep decline afterwards. While this graph gave us a good handle on the numbers, there were questions unanswered about the data collection.The  drastic increase from 2014-2015 may be explained by an attempt by the City of Los Angeles to digitize their citations. But that explanation is contradicted by the equally sharp decline after 2017. This left the question of how many citations did they actually collect? The graph didn't tell us exactly, but it gives us a range of values that captures the true value or something close. Even without the actual answer, this graph highlighted the magnitude of the citaitons in LA.
+```{r dollars per year, echo=FALSE, message=FALSE, warning=FALSE}
+data.frame(Year=c(seq(from=2010, to=2020, by=1), "Total"),
+         "Dollars_Collected" =c(730, 630, 2276, 3062, 2371400, 107172874, 130124585,151608139,124738695,75291586,2275, sum(c(730, 630, 2276, 3062, 2371400, 107172874, 130124585,151608139,124738695,75291586,2275))))%>%knitr::kable()
+
+Parking_Citations%>%
+  group_by(Violation.Description)%>%
+  summarise(count=n())->violations
+##price of most violated and then max fine amount
+
+
+data.frame(Top_Violations= c("NO PARK/STREET CLEAN", "METER EXP", "RED ZONE"), Count=c(2389114, 1634877, 635504), fine_amount=c(73,63,93)) %>%
+  knitr::kable()
+## red curb just means no stopping, parking, or standing 
+
+##maximum fine
+Parking_Citations%>%
+ select(Violation.Description, Fine.amount)%>%
+  filter(Fine.amount ==1100)%>%
+  filter(Violation.Description=="DP- RO NOT PRESENT")%>%head(1)%>%knitr::kable()
+
+## the maximum fine amount is for parking in a disabled parking spot with no DP registration
+
+
+## what are the hotspots
+Parking_Citations %>%
+  select(Location)%>%
+  group_by(Location)%>%
+  summarise(count=n())%>%
+  arrange(desc(count))%>%
+  head(10)%>% knitr::kable()
+
+
+Parking_Citations%>%select(RP.State.Plate)%>%
+filter(!is.na(RP.State.Plate))%>%
+filter(RP.State.Plate!="CA")%>%
+group_by(RP.State.Plate)%>%
+  summarise(count=n())
+
+```
+    
+  Los Angeles is not just a city with horrible traffic, it's also a city where it is terribly hard to park, especially in tourist areas, shopping districts, or other special zones. Over the past decade, The City of Los Angeles collected $591,316,252 digitally. The amount of dollars collected mimicks the movement in the previous graph of citations byt year Our Top_Violations table explains that the top three violations are parking in a street clean area, parking with an experied meter, and parking in a red zone. Street Cleaning happens every day in Los Angeles, albeit on different sides of the roads depending on the day of the week. Because the side of the street that is cleaned changes on a daily bases, many people are caught parking on the wrong side of the road and are penalized. People who are in a hurry, who do know the law, sometimes ignore it or assume that the street cleaner has passed or won't come and are also penalized frequently. Parking in a red zone is The City of Los Ageles's third most frequently cited violation. A red curb, or red zone, indicates no parking, standing or stopping for public safety reasons^3^.  Parking violations vary in their severity. Violating a red zone parking law is a public safety issue, so the fine is more expensive than that of a meter experation ticket, which is stil very expensive! At the very least, do not get caught parking in a disabled vehicle designated spot without reason. That fine will cost you 1100 dollars. 
+  Parking citations by location indicated where the most violations have occured. These violations happen in major hotspots of the city which have heavy tourist footraffick and very little space. The lack of parking forces people to park in residential areas, where there are high chances of fines. 1301 ELectric Ave is a street where people park to visit Long Beach, California's famous Seal Beach. Irving Court is very close to a the Venice Beach boardwalk and the Abbot Keny shopping district. Hawthorne Avenue is the spot just south of the bustling Hollyword Blvd. Among these hotspots is also The Griffith Observatory. These Los Angeles must sees attract more cars and tourists than an area can hold and so are, unsuprisingly, the locations with the most cited violations.
+
 
 ```{r cleanup, eval=FALSE, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE}
+#Average fine amount by year
+Parking_Citations %>%
+  filter(!is.na(Issue.Date), !is.na(Fine.amount)) %>%
+  mutate(year = substring(Issue.Date, 7, 10))%>%
+  group_by(year) %>%
+  summarise(avg = mean(Fine.amount), count = n())%>%
+  filter(count > 20000)%>% 
+  ggplot() + aes(x = year, y = avg) + geom_histogram(stat = "identity") +
+  theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8))
+```
+
+#### Who receives parking citations?
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+#Average fine amount by car Color
+Parking_Citations[1:1000, 1:22] %>% 
+  filter(!is.na(Fine.amount), !is.na(Color)) %>%
+  group_by(Color) %>%
+  summarise(avg = mean(Fine.amount), count = n()) %>%
+  subset(Color == "RD" | Color == "GY" | Color =="WH" | Color == "BL" | Color == "BK" | Color == "BN") %>% 
+  transmute(Color = Color, avg = avg) %>%
+  ggplot() + aes(x = Color, y = avg, fill = Color) + geom_histogram(stat = "identity") +
+  labs(title = "Average fine amount by car color", x = "Car Color", y = "Average Fine Amount ($)") +
+  theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8),
+        legend.position = "none") +
+  scale_x_discrete(labels = c("Black", "Blue", "Brown", "Gray", "Red", "White")) +
+  scale_fill_manual(values = c("Black", "Blue", "#8B4513", "Gray", "Red", "White"))+
+  theme(plot.title = element_text(size=20))
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+#Average fine by Make of car 
+Parking_Citations %>% 
+  filter(!is.na(Fine.amount)) %>%
+  group_by(Make) %>%
+  summarise(avg = mean(Fine.amount), count = n())%>%
+  filter(count > 10000) %>%
+  ggplot() + aes(x = Make, y = avg) + geom_histogram(stat = "identity") +
+  theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8))+
+  labs(title = "Average Fine Amount By Make of Car")
+
+  
+#Average fine by Make of car no graph  
+Parking_Citations %>% 
+  filter(!is.na(Fine.amount)) %>%
+  group_by(Make) %>%
+  summarise(avg = mean(Fine.amount), count = n())%>%
+  filter(count > 10000)%>% transmute(Make = Make, avg = avg)
+
+
+```
+
+#### Where do parking violations occur?
+
+```{r lat/lon, eval=FALSE, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE}
 #will not run with eval = FALSE
 locs <- Parking_Citations%>%filter(!is.na(Latitude), !is.na(Fine.amount), Latitude > 99999)%>%select(Latitude, Longitude, Ticket.number)
 coordinates(locs) <- ~ Latitude + Longitude
@@ -64,49 +212,6 @@ ggmap(map) +
 ```
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-#Average fine amount by car Color
-Parking_Citations[1:1000, 1:22] %>% 
-  filter(!is.na(Fine.amount), !is.na(Color)) %>%
-  group_by(Color) %>%
-  summarise(avg = mean(Fine.amount), count = n()) %>%
-  subset(Color == "RD" | Color == "GY" | Color =="WH" | Color == "BL" | Color == "BK" | Color == "BN") %>% 
-  transmute(Color = Color, avg = avg) %>%
-  ggplot() + aes(x = Color, y = avg, fill = Color) + geom_histogram(stat = "identity") +
-  labs(title = "Average fine amount by car color", x = "Car Color", y = "Average Fine Amount ($)") +
-  theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8),
-        legend.position = "none") +
-  scale_x_discrete(labels = c("Black", "Blue", "Brown", "Gray", "Red", "White")) +
-  scale_fill_manual(values = c("Black", "Blue", "#8B4513", "Gray", "Red", "White"))
-```
-
-```{r holidays, echo=FALSE, message=FALSE, warning=FALSE}
-holidays <- c("12/25/2014", "12/25/2015", "12/25/2016", "12/25/2017", "12/25/2018", "12/25/2019", 
-              "12/31/2014", "12/31/2015", "12/31/2016", "12/31/2017", "12/31/2018", "12/31/2019", 
-              "11/27/2014", "11/26/2015", "11/24/2016", "11/23/2017", "11/22/2018", "11/28/2019",
-              "10/31/2014", "10/31/2015", "10/31/2016", "10/31/2017", "10/31/2018", "10/31/2019",
-              "06/04/2014", "06/04/2015", "06/04/2016", "06/04/2017", "06/04/2018", "06/04/2019",
-              "02/14/2014", "02/14/2015", "02/14/2016", "02/14/2017", "02/14/2018", "02/14/2019",
-              "03/17/2014", "03/17/2015", "03/17/2016", "03/17/2017", "03/17/2018", "03/17/2019",
-              "02/02/2014", "02/01/2015", "02/07/2016", "02/05/2017", "02/04/2018", "02/03/2019")
-holiday_names <- data.frame(date= c("02/14", "03/17", "06/04", "10/31", "11/22", "11/23", "11/24", "11/26","11/27", "11/28", "12/25", "12/31", "02/02", "02/01", "02/07", "02/05", "02/04", "02/03"), 
-                            name = c("Valentine's", "St. Patricks", "July 4th", "Halloween", rep("Thanksgiving", 6), "Christmas", "New Years", rep("Super Bowl Sunday", 6)))
-
-h_parking <- Parking_Citations%>%filter(Issue.Date %in% holidays)%>%
-              mutate(date = format(as.Date(Issue.Date, format = "%m/%d/%Y"), format="%m/%d"))%>%
-              left_join(holiday_names, by = 'date')
-
-
-h_parking <- h_parking%>%group_by(name)%>%summarise(mean = mean(Fine.amount), sum_prop = sum(Fine.amount)/1965659, count = n()) 
-
-grid.newpage()
-vp <- viewport(height = 4, width = 10, default.units = "cm")
-pushViewport(vp)
-grid.circle(x = rep(seq(1, 9, length.out = 4), 2), y = c(rep(0.5, 4), rep(3.5, 4)), r = h_parking$sum_prop, default.units = "cm", vp = vp)
-grid.text(h_parking$name, x = rep(seq(1, 9, length.out = 4), 2), y = c(rep(0, 4), rep(4, 4)), default.units = "cm", vp = vp, gp = gpar(cex = 0.5))
-
-```
-
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
 ## creates sql weather comparison graph
 library(RSQLite)
 dcon <- dbConnect(SQLite(), dbname = "data.sqlite")
@@ -133,78 +238,153 @@ ggmap(map) +
 
 ```
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
-#Average fine by Make of car 
-Parking_Citations %>% 
-  filter(!is.na(Fine.amount)) %>%
-  group_by(Make) %>%
-  summarise(avg = mean(Fine.amount), count = n())%>%
-  filter(count > 10000) %>%
-  ggplot() + aes(x = Make, y = avg) + geom_histogram(stat = "identity") +
-  theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8))
-
-  
-#Average fine by Make of car no graph  
-Parking_Citations %>% 
-  filter(!is.na(Fine.amount)) %>%
-  group_by(Make) %>%
-  summarise(avg = mean(Fine.amount), count = n())%>%
-  filter(count > 10000)%>% transmute(Make = Make, avg = avg)
-
-#Average fine amount by year
-Parking_Citations %>% 
-  filter(!is.na(Issue.Date), !is.na(Fine.amount)) %>%
-  mutate(year = substring(Issue.Date, 7, 10))%>%
-  group_by(year) %>%
-  summarise(avg = mean(Fine.amount), count = n())%>%
-  filter(count > 20000)%>% 
-  ggplot() + aes(x = year, y = avg) + geom_histogram(stat = "identity") +
-  theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8))
-```
-
-```{r 3D Heatmap, echo=FALSE, message=FALSE, warning=FALSE}
-set_token(Sys.getenv("MAPBOX"))
-mapdeck(pitch = 45, zoom = 100) %>%
-  add_grid(data = Parking_Citations[1:30000,], lat = "real_lat", lon = "real_lng", 
-           cell_size = 1000, elevation_scale = 50, layer_id = "grid_layer",
-           colour_range = viridisLite::plasma(6))
-```
-
-##numer of fines per year
-
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+#### When do violations occur?  
 
 
-Parking_Citations%>% 
-mutate(Year=format(as.Date(Issue.Date, format="%m/%d/%Y"), format=("%Y"))) ->Parking_Citations
-Parking_Citations$Year <- as.integer(Parking_Citations$Year)
-                                     
-Parking_Citations %>%
-  group_by(Year) %>%
-  summarise(count=n())->df
-x <- df$Year
-y <- df$count
+###### Holiday Parking  
+  Major holidays account for some of the busiest travel days in the year, so we decided to investigate how the total amount of money collected on each day was distributed. We selected New Year's Eve, Super Bowl Sunday, Valentine's Day, St. Patrick's Day, July 4^th^, Halloween, Thanksgiving, and Christmas and summed up the fines issued for each day. The totals were then plotted proportionally for each holiday seen below.  
+```{r holidays, echo=FALSE, message=FALSE, warning=FALSE, fig.align="center"}
+holidays <- c("12/25/2014", "12/25/2015", "12/25/2016", "12/25/2017", "12/25/2018", "12/25/2019", 
+              "12/31/2014", "12/31/2015", "12/31/2016", "12/31/2017", "12/31/2018", "12/31/2019", 
+              "11/27/2014", "11/26/2015", "11/24/2016", "11/23/2017", "11/22/2018", "11/28/2019",
+              "10/31/2014", "10/31/2015", "10/31/2016", "10/31/2017", "10/31/2018", "10/31/2019",
+              "06/04/2014", "06/04/2015", "06/04/2016", "06/04/2017", "06/04/2018", "06/04/2019",
+              "02/14/2014", "02/14/2015", "02/14/2016", "02/14/2017", "02/14/2018", "02/14/2019",
+              "03/17/2014", "03/17/2015", "03/17/2016", "03/17/2017", "03/17/2018", "03/17/2019",
+              "02/02/2014", "02/01/2015", "02/07/2016", "02/05/2017", "02/04/2018", "02/03/2019")
+holiday_names <- data.frame(date= c("02/14", "03/17", "06/04", "10/31", "11/22", "11/23", "11/24", "11/26","11/27", "11/28", "12/25", "12/31", "02/02", "02/01", "02/07", "02/05", "02/04", "02/03"), 
+                            name = c("Valentine's", "St. Patricks", "July 4th", "Halloween", rep("Thanksgiving", 6), "Christmas", "New Years", rep("Super Bowl Sunday", 6)))
 
+h_parking <- Parking_Citations%>%filter(Issue.Date %in% holidays)%>%
+              mutate(date = format(as.Date(Issue.Date, format = "%m/%d/%Y"), format="%m/%d"))%>%
+              left_join(holiday_names, by = 'date')
+
+
+h_parking <- h_parking%>%group_by(name)%>%summarise(mean = mean(Fine.amount), sum_prop = sum(Fine.amount)/1965659, count = n(), tot = formatC(sum(Fine.amount), format = "d", big.mark = ",")) 
 
 grid.newpage()
-pushViewport(plotViewport(margins = c(5.1, 4.1, 4.1, 2.1)))
-pushViewport(dataViewport(x, y))
-grid.rect(gp=gpar(fill="yellow", alpha=.7))
-grid.text(label="Parking Tickets By Year",x=.5, y=1.05, gp=gpar(fontface="bold", cex=1.5))
-grid.xaxis(at=x)
-grid.yaxis(at=y, gp=gpar(cex=.8))
-grid.lines(x,y, default.units = "native", gp=gpar(lty=8, col="red", lwd=3))
-grid.points(x[1:7], y[1:7], pch=24, size=unit(0.025, "npc"), gp=gpar(fill="red"))
-grid.points(x[8:11], y[8:11], pch = 25, size=unit(0.025, "npc"), gp=gpar(fill="green"))
-popViewport(2)
-```
-```{r}
-df <- data.frame(Year=seq(from=2010, to=2020, by=1),
-         "Dollars_Collected" =c(730, 630, 2276, 3062, 2371400, 107172874, 130124585,151608139,124738695,75291586,2275))
+pushViewport(plotViewport(margins = c(1, 1, 1, 1)))
+vp <- viewport(layout = grid.layout(2,4, heights = 2, widths = 2, default.units = "cm"))
+pushViewport(vp)
+#grid.circle(x = rep(seq(1, 9, length.out = 4), 2), y = c(rep(0.5, 4), rep(3.5, 4)), r = h_parking$sum_prop, default.units = "cm", vp = vp)
+grid.raster(readPNG("Pictures/kisspng-christmas-lights-picture-frames-clip-art-circle-border-5abc7a426f0ea9.2306054415223015064549.png"),
+            width = h_parking$sum_prop[h_parking$name == "Christmas"], 
+            height = h_parking$sum_prop[h_parking$name == "Christmas"], vp = viewport(layout.pos.row = 2, layout.pos.col = 4))
 
-df <- as.data.frame(df)
-df
-knitr::kable(df)
+grid.raster(readPNG("Pictures/kisspng-thanksgiving-vector-graphics-clip-art-royalty-free-custom-thanksgiving-buttons-holiday-buttons-cu-5baad5eeb0b234.6955432815379225427238.png"), width = h_parking$sum_prop[h_parking$name == "Thanksgiving"], 
+            height = h_parking$sum_prop[h_parking$name == "Thanksgiving"], vp = viewport(layout.pos.row = 2, layout.pos.col = 3))
+
+grid.raster(readPNG("Pictures/1165821.png"), width = h_parking$sum_prop[h_parking$name == "Super Bowl Sunday"], 
+            height = h_parking$sum_prop[h_parking$name == "Super Bowl Sunday"], vp = viewport(layout.pos.row = 1, layout.pos.col = 2))
+
+grid.raster(readPNG("Pictures/hiclipart.com.png"),
+            width = h_parking$sum_prop[h_parking$name == "July 4th"], 
+            height = h_parking$sum_prop[h_parking$name == "July 4th"], vp = viewport(layout.pos.row = 2, layout.pos.col = 1))
+
+grid.raster(readPNG("Pictures/imgbin-valentine-s-day-desktop-love-hearts-valentine-s-day-promotions-MpsSCTDje0pSvBvJ331Se9gxr.png"),
+            width = h_parking$sum_prop[h_parking$name == "Valentine's"], 
+            height = h_parking$sum_prop[h_parking$name == "Valentine's"], vp = viewport(layout.pos.row = 1, layout.pos.col = 3))
+
+grid.raster(readPNG("Pictures/pngfuel.com.png"),
+            width = h_parking$sum_prop[h_parking$name == "Halloween"], 
+            height = h_parking$sum_prop[h_parking$name == "Halloween"], vp = viewport(layout.pos.row = 2, layout.pos.col = 2))
+
+grid.raster(readPNG("Pictures/pngguru.com.png"),
+            width = h_parking$sum_prop[h_parking$name == "St. Patricks"], 
+            height = h_parking$sum_prop[h_parking$name == "St. Patricks"], vp = viewport(layout.pos.row = 1, layout.pos.col = 4))
+
+grid.raster(readPNG("Pictures/PikPng.com_clock-emoji-png_2003036.png"),
+            width = h_parking$sum_prop[h_parking$name == "New Years"], 
+            height = h_parking$sum_prop[h_parking$name == "New Years"], vp = viewport(layout.pos.row = 1, layout.pos.col = 1))
+
+grid.text("New Year's",vp = viewport(layout.pos.row = 1, layout.pos.col = 1),y = 1.5, gp = gpar(cex = 0.5))
+grid.text(paste0('Total: $', h_parking$tot[h_parking$name == "New Years"]), vp = viewport(layout.pos.row = 1, layout.pos.col = 1),
+          y = 1.25, gp = gpar(cex = 0.5))
+grid.text("Super Bowl Sunday",vp = viewport(layout.pos.row = 1, layout.pos.col = 2),y = 1.5, gp = gpar(cex = 0.5))
+grid.text(paste0('$', h_parking$tot[h_parking$name == "Super Bowl Sunday"]), vp = viewport(layout.pos.row = 1, layout.pos.col = 2),
+          y = 1.25, gp = gpar(cex = 0.5))
+grid.text("Valentine's Day",vp = viewport(layout.pos.row = 1, layout.pos.col = 3),y = 1.5, gp = gpar(cex = 0.5))
+grid.text(paste0('$', h_parking$tot[h_parking$name == "Valentine's"]), vp = viewport(layout.pos.row = 1, layout.pos.col = 3),
+          y = 1.25, gp = gpar(cex = 0.5))
+grid.text("St. Patrick's Day",vp = viewport(layout.pos.row = 1, layout.pos.col = 4),y = 1.5, gp = gpar(cex = 0.5))
+grid.text(paste0('$', h_parking$tot[h_parking$name == "St. Patricks"]), vp = viewport(layout.pos.row = 1, layout.pos.col = 4),
+          y = 1.25, gp = gpar(cex = 0.5))
+grid.text("Christmas",vp = viewport(layout.pos.row = 2, layout.pos.col = 4),y = -.25, gp = gpar(cex = 0.5))
+grid.text(paste0('$', h_parking$tot[h_parking$name == "Christmas"]), vp = viewport(layout.pos.row = 2, layout.pos.col = 4),
+          y = -.5, gp = gpar(cex = 0.5))
+grid.text("Thanksgiving",vp = viewport(layout.pos.row = 2, layout.pos.col = 3),y = -.25, gp = gpar(cex = 0.5))
+grid.text(paste0('$', h_parking$tot[h_parking$name == "Thanksgiving"]), vp = viewport(layout.pos.row = 2, layout.pos.col = 3),
+          y = -.5, gp = gpar(cex = 0.5))
+grid.text("Halloween",vp = viewport(layout.pos.row = 2, layout.pos.col = 2),y = -.25, gp = gpar(cex = 0.5))
+grid.text(paste0('$', h_parking$tot[h_parking$name == "Halloween"]), vp = viewport(layout.pos.row = 2, layout.pos.col = 2),
+          y = -.5, gp = gpar(cex = 0.5))
+grid.text("July 4th",vp = viewport(layout.pos.row = 2, layout.pos.col = 1),y = -.25, gp = gpar(cex = 0.5))
+grid.text(paste0('$', h_parking$tot[h_parking$name == "July 4th"]), vp = viewport(layout.pos.row = 2, layout.pos.col = 1),
+          y = -.5, gp = gpar(cex = 0.5))
+```
+
+Our analysis found a striking difference between the fine amounts for holidays. We observed that holidays typically associated with drinking, New Year's, St. Patrick's Day, and July 4^th^, tended to have more fines issued. We were surprised to find that Christmas and Thanksgiving had the two lowest total fines issued, as we associated these holidays with travel. These lower than expected values could possibly be explained by other variables, however, such as a decrease in LAPD/LADOT staff working on these days or increased leniency. We did expect Halloween to have a large fine amount, as finding legal parking while Trick-or-Treating can be difficult. We expected the Valentines Day's results as well, but were surprised that Super Bowl Sunday was so low, as traveling to parties and drinking often occurs on that day. Super Bowl Sunday, however, is the only holiday that is always on a certain day  of the week, whereas all of the other holidays could fall on any day. This led us to investigate whether the day of the week influenced how citations were issued.  
+
+
+###### Days of the Week  
+  While analyzing which day of the week elicited the most citations, we also decided to group by the season of the year to see if that would affect the total volume of citations issued.  
+  
+```{r that time of the week, echo=FALSE, message=FALSE, warning=FALSE}
+
+Parking_Citations%>%mutate(day_of_month = format(as.Date(Issue.Date, format = "%m/%d/%Y"), format="%u"))%>%
+  mutate(month = as.integer(format(as.Date(Issue.Date, format = "%m/%d/%Y"), format="%m")))%>%
+  mutate(season = ifelse(3<=month & month<6, "Spring", ifelse(6<=month & month<9, "Summer", ifelse(9<=month& month<12, "Fall","Winter"))))%>% mutate(season = factor(season, levels = c("Spring", "Summer", "Fall", "Winter")))%>%
+  ggplot() + aes(x = day_of_month) + geom_bar(aes(fill = season, alpha = day_of_month)) + facet_wrap(~season) + 
+  scale_x_discrete(labels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")) +
+  labs(x = 'Day of the Week', y = 'Total number of citations', title = 'Distribution of tickets throughout the week for each season') +
+  theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8), legend.position = "none") +
+  scale_alpha_discrete(range = c(0.69, 1))+
+  scale_fill_manual(values = c('chartreuse3','darkgoldenrod2','darkorange2','deepskyblue3'))
+```
+  
+Across every season, Tuesday had the greatest volume of citations issued, while the weekends had the fewest. This finding was interesting, because the increased traffic usually generated on weekends did not translate into the volume of citations, but somehow created the opposite effect. Additionally, while we expected to see the citation volume skyrocket in the summer with the influx of tourists ignorant to LA parking laws, summer volumes were overall lower than both the spring and winter. This data did, however, validate the possibility that Super Bowl Sunday had relatively low fines, as Sundays in general received less citations than weekdays.  
+
+###### Time of Day
+  We also explored how citations were issued over the course of the day.   
+  
+```{r that time of the day, echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(data = Parking_Citations)  + labs(title = "Frequency of Parking Tickets Throughout the Day",
+                            x = "Time of Day (Military Time)", y = "Frequency of Tickets") +
+  geom_histogram(aes(x = Issue.time,y = ..density.., fill = ..x..),  binwidth = 100, boundary = 0, closed = "left") + 
+  scale_fill_gradient(low = "Gold", high = "Navy Blue")+ theme(axis.text.x = element_text(hjust = 1, angle = 45), panel.background = element_rect(fill = "gray75")) +
+  scale_x_continuous(breaks = seq(0, 2300, 100), labels = paste(seq(0, 23, 1), "00", sep = ":")) +
+  geom_density(aes(x = Issue.time), size = 1.5) +  guides(fill = FALSE)
+```
+The greatest frequency of citations were issued between 8:00am and 2:00pm, with peaks occurring in the first half of each hour. Unsurprisingly, very few citations were issued in the early hours of the morning, wth the lowest frequency occurring between 5:00-6:00am.
+
+###### Quotas
+It is a common misconception that ticket frequencies increase at the end of each month as many people believe that officers have monthly quotas to fill. We explored whether an increase in ticket frequency was observed at the end of the month by plotting the total count of tickets for each day of the month for all months.
+```{r that time of the month, echo=FALSE, message=FALSE, warning=FALSE}
+Parking_Citations%>%mutate(day_of_month = format(as.Date(Issue.Date, format = "%m/%d/%Y"), format="%d"))%>%
+  ggplot() + aes(x = day_of_month) + geom_bar()
 
 ```
+
+As seen in the plot, not only did we find no evidence of citation frequency ramping up toward the end of the month, we found that citation frequency tends to remain relatively stable. The extremely low frequency on days that are the 31^st^ of the month is caused by only 7 out of 12 months having 31 days.
+
+
+
+#### Conclusions
+
+
+##### References:
+1. https://la.streetsblog.org/2010/12/13/density-car-ownership-and-what-it-means-for-the-future-of-los-angeles/  
+2. https://data.lacity.org/A-Well-Run-City/Parking-Citations/wjz9-h9np  
+3. https://ladot.lacity.org/residents/colored-curb-zones  
+4. 
+
+
+
+
+
+
+
+
+
+
 
