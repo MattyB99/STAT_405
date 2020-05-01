@@ -238,6 +238,13 @@ ggmap(map) +
 
 ```
 
+```{r, warning=FALSE, echo=FALSE, message=FALSE}
+library(RSQLite)
+dcon <- dbConnect(SQLite(), dbname = "crime.db")
+dbSendQuery(dcon, "
+            SELECT")
+```
+
 #### When do violations occur?  
 
 
@@ -366,7 +373,6 @@ Parking_Citations%>%mutate(day_of_month = format(as.Date(Issue.Date, format = "%
 ```
 
 As seen in the plot, not only did we find no evidence of citation frequency ramping up toward the end of the month, we found that citation frequency tends to remain relatively stable. The extremely low frequency on days that are the 31^st^ of the month is caused by only 7 out of 12 months having 31 days.
-
 
 
 #### Conclusions
