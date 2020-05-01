@@ -138,6 +138,14 @@ Parking_Citations %>%
 ```
 
 #### Who receives parking citations?
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+ggplot(map_data("state")%>%left_join(Parking_Citations%>%group_by(RP.State.Plate)%>%
+                                       summarise(count = n())%>%left_join(read.csv('statename.csv'))%>%filter(!is.na(region), region != "california"))) + 
+  aes(long, lat, group = group) +
+  geom_polygon(aes(fill = count), color = "white") + scale_fill_viridis_c(option = "C")
+```
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 #Average fine amount by car Color
 Parking_Citations %>% 
@@ -147,8 +155,7 @@ Parking_Citations %>%
   subset(Color == "RD" | Color == "GY" | Color =="WH" | Color == "BL" | Color == "BK" | Color == "BN") %>% 
   ggplot() + aes(x = Color, y = count, fill = Color) + geom_histogram(stat = "identity") +
   labs(title = "Total Parking Violations by car color", x = "Car Color", y = "Total Parking Violations") +
-  theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8),
-        legend.position = "none") +
+  theme(legend.position = "none") +
   scale_x_discrete(labels = c("Black", "Blue", "Brown", "Gray", "Red", "White")) +
   scale_fill_manual(values = c("Black", "Blue", "#8B4513", "Gray", "Red", "White"))+
   theme(plot.title = element_text(size=20))
@@ -172,10 +179,55 @@ Parking_Citations %>%
 ```
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
-ggplot(map_data("state")%>%left_join(Parking_Citations%>%group_by(RP.State.Plate)%>%
-                                       summarise(count = n())%>%left_join(read.csv('statename.csv'))%>%filter(!is.na(region), region != "california"))) + 
-  aes(long, lat, group = group) +
-  geom_polygon(aes(fill = count), color = "white") + scale_fill_viridis_c(option = "C")
+#Average fine by Body.Style
+
+grid.newpage()
+pushViewport(viewport(layout = grid.layout(2, 2)))
+
+a <- Parking_Citations %>% 
+  filter(!is.na(Fine.amount)) %>%
+  group_by(Body.Style) %>%
+  summarise(avg = mean(Fine.amount), count = n()) %>%
+  subset(Body.Style == "TR" | Body.Style == "PU" | Body.Style == "VN" | Body.Style == "SV" | Body.Style =="SU" | Body.Style == "SD" | Body.Style == "CP" | Body.Style == "RD" | Body.Style == "CV" | Body.Style == "HA" | Body.Style == "SW") %>% 
+  ggplot() + aes(x = Body.Style, y = avg, fill = ..x..) + geom_histogram(stat = "identity") +
+  theme(panel.background = element_rect(fill = "gray75"),
+        legend.position = "none",
+        axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8)) +
+  labs(x = "Standard Personal Vehicles", y = "Average Fine Amount ($)") +
+  scale_fill_gradient(low = "Light Sky Blue", high = "Navy Blue") + 
+  scale_x_discrete(labels = c("Coupe", "Convertible", "Hatchback", "Pick-up", "Roadster", "Sedan", "SUV", "Sports Van", "Station Wagon", "Truck", "Van"))
+
+b <- Parking_Citations %>% 
+  filter(!is.na(Fine.amount)) %>%
+  group_by(Body.Style) %>%
+  summarise(avg = mean(Fine.amount), count = n()) %>%
+  subset(Body.Style == "AM" | Body.Style =="TT" | Body.Style == "FO" | Body.Style == "BU" | Body.Style == "LM" | Body.Style == "TN") %>% 
+  ggplot() + aes(x = Body.Style, y = avg, fill = ..x..) + geom_histogram(stat = "identity") +
+  theme(panel.background = element_rect(fill = "gray75"),
+        legend.position = "none",
+        axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8)) +
+  labs(x = "Professional Vehicles") +
+  scale_fill_gradient(low = "Light Sky Blue", high = "Navy Blue") +
+  scale_x_discrete(labels = c("Ambulance", "Bus", "Forklift", "Limo", "Tanker", "Trailer"))
+
+c <- Parking_Citations %>% 
+  filter(!is.na(Fine.amount)) %>%
+  group_by(Body.Style) %>%
+  summarise(avg = mean(Fine.amount), count = n()) %>%
+  subset(Body.Style == "MH" | Body.Style =="MC" | Body.Style == "MS" | Body.Style == "GC" | Body.Style == "MD") %>% 
+  ggplot() + aes(x = Body.Style, y = avg, fill = ..x..) + geom_histogram(stat = "identity") +
+  theme(panel.background = element_rect(fill = "gray75"),
+        legend.position = "none",
+        axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8)) +
+  labs(x = "Non-standard Personal Vehicles", y = "Average Fine Amount ($)") +
+  scale_fill_gradient(low = "Light Sky Blue", high = "Navy Blue") +
+  scale_x_discrete(labels = c("Golf Cart", "Motorcycle", "Moped", "Motor Home", "Motor Scooter"))
+
+print(a, vp = viewport(layout.pos.row = 1))
+print(b, vp = viewport(layout.pos.row = 2, layout.pos.col = 2))
+print(c, vp = viewport(layout.pos.row = 2, layout.pos.col = 1))
+
+popViewport(1)
 ```
 
 #### Where do parking violations occur?
