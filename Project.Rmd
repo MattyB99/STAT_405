@@ -113,11 +113,11 @@ Parking_Citations %>%
   head(10)%>% knitr::kable()
 
 
-Parking_Citations%>%select(RP.State.Plate)%>%
-filter(!is.na(RP.State.Plate))%>%
-filter(RP.State.Plate!="CA")%>%
-group_by(RP.State.Plate)%>%
-  summarise(count=n())
+##Parking_Citations%>%select(RP.State.Plate)%>%
+##filter(!is.na(RP.State.Plate))%>%
+##filter(RP.State.Plate!="CA")%>%
+##group_by(RP.State.Plate)%>%
+##  summarise(count=n())
 
 ```
     
@@ -140,7 +140,7 @@ Parking_Citations %>%
 #### Who receives parking citations?
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 #Average fine amount by car Color
-Parking_Citations %>% 
+Parking_Citations[1:1000, 1:22] %>% 
   filter(!is.na(Fine.amount), !is.na(Color)) %>%
   group_by(Color) %>%
   summarise(avg = mean(Fine.amount), count = n()) %>%
@@ -171,15 +171,6 @@ Parking_Citations %>%
   scale_x_discrete(labels = c("Acura", "Audi", "BMW", "Cadillac", "Chevy", "Chrysler", "Dodge", "Ford", "GMC", "Honda", "Hyundai", "Infinity", "Jeep", "Kia", "Lexus", "Land Rover", "Mazda", "Mercedez", "Mitsubishi", "Mini Cooper", "Nissan", "Other", "Subaru", "Toyota", "Volkswagon", "Volvo"))
 
 ```
-
-
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
-ggplot(map_data("state")%>%left_join(Parking_Citations%>%group_by(RP.State.Plate)%>%
-                                       summarise(count = n())%>%left_join(read.csv('statename.csv'))%>%filter(!is.na(region), region != "california"))) + 
-  aes(long, lat, group = group) +
-  geom_polygon(aes(fill = count), color = "white") + scale_fill_viridis_c(option = "C")
-```
-
 
 #### Where do parking violations occur?
 
@@ -214,14 +205,12 @@ overallMap <- ggmap(map) +
   stat_density2d(data = Parking_Citations[4000000:4100000,], aes(x = real_lng, y = real_lat, fill = ..level.., alpha = ..level..), geom = "polygon", size = 0.01, bins = 16) +
   scale_fill_gradient(low = "red", high = "yellow") +
   scale_alpha(range = c(0, 1), guide = FALSE)
-overallMap
 ```
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 ## creates sql weather comparison graph
 library(RSQLite)
 dcon <- dbConnect(SQLite(), dbname = "data.sqlite")
-dbListTables(dcon)
 
 mydf <- dbSendQuery(conn = dcon, "
 SELECT *
@@ -241,13 +230,11 @@ weatherMap <- ggmap(map) +
   stat_density2d(data = weather, aes(x = real_lng, y = real_lat, fill = ..level.., alpha = ..level..), geom = "polygon", size = 0.01, bins = 16) +
   scale_fill_gradient(low = "red", high = "yellow") +
   scale_alpha(range = c(0, 1), guide = FALSE)
-weatherMap
 ```
 
 ```{r, warning=FALSE, echo=FALSE, message=FALSE}
 library(RSQLite)
 dcon <- dbConnect(SQLite(), dbname = "crime.db")
-dbListFields(dcon, "Crime_Data_from_2010_to_2019")
 df <- dbSendQuery(dcon, "
 SELECT field27, field28
 FROM Crime_Data_from_2010_to_2019;
@@ -255,11 +242,40 @@ FROM Crime_Data_from_2010_to_2019;
   dbFetch(-1)
 df <- df[-1,]
 df <- df[1:100000,]
-
-
-
 df$field27 <- as.numeric(df$field27)
 df$field28 <- as.numeric(df$field28)
+
+below500 <- dbSendQuery(dcon, "
+SELECT field9, field27, field28 
+FROM Crime_Data_from_2010_to_2019
+WHERE field9 Between 300 AND 550;
+") %>% 
+  dbFetch(-1) %>%
+  filter(field9 <= 550 && field9 > 300)
+below500$field27 <- as.numeric(below500$field27)
+below500$field28 <- as.numeric(below500$field28)
+below500 <- below500[-1,]
+below500 <- below500[1:100000,]
+
+badCrime <- dbSendQuery(dcon, "
+SELECT field9, field27, field28 
+FROM Crime_Data_from_2010_to_2019
+WHERE field9 < 300;
+") %>% 
+  dbFetch(-1) %>%
+  filter(field9 < 300)
+below500$field27 <- as.numeric(below500$field27)
+below500$field28 <- as.numeric(below500$field28)
+below500 <- below500[-1,]
+below500 <- below500[1:100000,]
+
+map <- get_map(getbb("Los Angeles"), zoom = 10, map_type = "roadmap")
+crime500Map <- ggmap(map) +
+  stat_density2d(data = below500, aes(x = field28, y = field27, fill = ..level.., alpha = ..level..),
+                 geom = "polygon", size = 0.01, bins = 16) +
+  scale_fill_gradient(low = "red", high = "yellow") +
+  scale_alpha(range = c(0, 1), guide = FALSE)
+crime500Map
 dbDisconnect(dcon)
 
 map <- get_map(getbb("Los Angeles"), zoom = 10, map_type = "roadmap")
@@ -268,7 +284,6 @@ crimeMap <- ggmap(map) +
                  geom = "polygon", size = 0.01, bins = 16) +
   scale_fill_gradient(low = "red", high = "yellow") +
   scale_alpha(range = c(0, 1), guide = FALSE)
-crimeMap
 
 ```
 
