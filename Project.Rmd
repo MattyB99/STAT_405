@@ -204,7 +204,8 @@ map <- get_map(getbb("Los Angeles"), zoom = 10, map_type = "roadmap")
 overallMap <- ggmap(map) +
   stat_density2d(data = Parking_Citations[4000000:4100000,], aes(x = real_lng, y = real_lat, fill = ..level.., alpha = ..level..), geom = "polygon", size = 0.01, bins = 16) +
   scale_fill_gradient(low = "red", high = "yellow") +
-  scale_alpha(range = c(0, 1), guide = FALSE)
+  scale_alpha(range = c(0, 1), guide = FALSE) + 
+  theme(axis.text.x = element_text(hjust  = 1, angle = 45))
 ```
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
@@ -229,11 +230,14 @@ map <- get_map(getbb("Los Angeles"), zoom = 10, map_type = "roadmap")
 weatherMap <- ggmap(map) +
   stat_density2d(data = weather, aes(x = real_lng, y = real_lat, fill = ..level.., alpha = ..level..), geom = "polygon", size = 0.01, bins = 16) +
   scale_fill_gradient(low = "red", high = "yellow") +
-  scale_alpha(range = c(0, 1), guide = FALSE)
+  scale_alpha(range = c(0, 1), guide = FALSE) + 
+  theme(axis.text.x = element_text(hjust  = 1, angle = 45))
 ```
 
 ```{r, warning=FALSE, echo=FALSE, message=FALSE}
 library(RSQLite)
+
+## all crime
 dcon <- dbConnect(SQLite(), dbname = "crime.db")
 df <- dbSendQuery(dcon, "
 SELECT field27, field28
@@ -245,6 +249,7 @@ df <- df[1:100000,]
 df$field27 <- as.numeric(df$field27)
 df$field28 <- as.numeric(df$field28)
 
+## crime between 300 and 550
 below500 <- dbSendQuery(dcon, "
 SELECT field9, field27, field28 
 FROM Crime_Data_from_2010_to_2019
@@ -252,11 +257,13 @@ WHERE field9 Between 300 AND 550;
 ") %>% 
   dbFetch(-1) %>%
   filter(field9 <= 550 && field9 > 300)
+below500 <- below500[-1,]
 below500$field27 <- as.numeric(below500$field27)
 below500$field28 <- as.numeric(below500$field28)
-below500 <- below500[-1,]
+
 below500 <- below500[1:100000,]
 
+## crime below 300
 badCrime <- dbSendQuery(dcon, "
 SELECT field9, field27, field28 
 FROM Crime_Data_from_2010_to_2019
@@ -264,27 +271,80 @@ WHERE field9 < 300;
 ") %>% 
   dbFetch(-1) %>%
   filter(field9 < 300)
-below500$field27 <- as.numeric(below500$field27)
-below500$field28 <- as.numeric(below500$field28)
-below500 <- below500[-1,]
-below500 <- below500[1:100000,]
+badCrime <- badCrime[-1,]
+badCrime <- badCrime[1:100000,]
+badCrime$field27 <- as.numeric(badCrime$field27)
+badCrime$field28 <- as.numeric(badCrime$field28)
 
+## demograhic
+demographic <- dbSendQuery(dcon, "
+SELECT field14, field27, field28
+FROM Crime_Data_from_2010_to_2019
+WHERE field14 IS NOT NULL AND field14 in ('B', 'C', 'W', 'H', 'I', 'P');
+") %>%
+  dbFetch(-1)
+demographic <- demographic[2:100001,]
+demographic$field27 <- as.numeric(demographic$field27)
+demographic$field28 <- as.numeric(demographic$field28)
+
+dbDisconnect(dcon)
+
+## demographic
+map <- get_map(getbb("Los Angeles"), zoom = 10, map_type = "roadmap")
+demMap <- ggmap(map) +
+  stat_density2d(data = demographic, aes(x = field28, y = field27, fill = ..level.., alpha = ..level..),
+                 geom = "polygon", size = 0.01, bins = 16) +
+  facet_wrap(~ field14) +
+  scale_fill_gradient(low = "red", high = "yellow") +
+  scale_alpha(range = c(0, 1), guide = FALSE) + 
+  theme(axis.text.x = element_text(hjust  = 1, angle = 45))
+
+## 300 to 550 crime
 map <- get_map(getbb("Los Angeles"), zoom = 10, map_type = "roadmap")
 crime500Map <- ggmap(map) +
   stat_density2d(data = below500, aes(x = field28, y = field27, fill = ..level.., alpha = ..level..),
                  geom = "polygon", size = 0.01, bins = 16) +
   scale_fill_gradient(low = "red", high = "yellow") +
-  scale_alpha(range = c(0, 1), guide = FALSE)
-crime500Map
-dbDisconnect(dcon)
+  scale_alpha(range = c(0, 1), guide = FALSE) + 
+  theme(axis.text.x = element_text(hjust  = 1, angle = 45))
 
+## badCrime map
+map <- get_map(getbb("Los Angeles"), zoom = 10, map_type = "roadmap")
+badCrimeMap <- ggmap(map) +
+  stat_density2d(data = badCrime, aes(x = field28, y = field27, fill = ..level.., alpha = ..level..),
+                 geom = "polygon", size = 0.01, bins = 16) +
+  scale_fill_gradient(low = "red", high = "yellow") +
+  scale_alpha(range = c(0, 1), guide = FALSE) + 
+  theme(axis.text.x = element_text(hjust  = 1, angle = 45))
+
+
+
+## overall crime MAP
 map <- get_map(getbb("Los Angeles"), zoom = 10, map_type = "roadmap")
 crimeMap <- ggmap(map) +
   stat_density2d(data = df, aes(x = field28, y = field27, fill = ..level.., alpha = ..level..),
                  geom = "polygon", size = 0.01, bins = 16) +
   scale_fill_gradient(low = "red", high = "yellow") +
-  scale_alpha(range = c(0, 1), guide = FALSE)
+  scale_alpha(range = c(0, 1), guide = FALSE) + 
+  theme(axis.text.x = element_text(hjust  = 1, angle = 45))
+```
 
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+grid.newpage()
+ly <- grid.layout(1, 3)
+pushViewport(viewport(layout = ly))
+print(overallMap, vp = viewport(layout.pos.row = 1, layout.pos.col = 1))
+print(weatherMap, vp = viewport(layout.pos.row = 1, layout.pos.col = 2))
+print(crimeMap, vp = viewport(layout.pos.row = 1, layout.pos.col = 3))
+
+grid.newpage()
+ly <- grid.layout(1, 2)
+pushViewport(viewport(layout = ly))
+print(crime500Map, vp = viewport(layout.pos.row = 1, layout.pos.col = 1))
+print(badCrimeMap, vp = viewport(layout.pos.row = 1, layout.pos.col = 2))
+
+demMap
 ```
 
 #### When do violations occur?  
