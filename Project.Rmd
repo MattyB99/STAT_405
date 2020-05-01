@@ -2,7 +2,6 @@
 title: "Your Project Title"
 author: "Matthew Barclay, Griffin Coccari, Alex Gallegos, Anushi Singhal"
 output: pdf_document
-#output: html_document
 fontsize: 10pt
 geometry: margin=1in
 ---
@@ -48,7 +47,7 @@ if(!knitr::is_html_output()) {knitr::include_graphics("3D_Map.png") }
 
   
 ##### Big Data  
-  The raw data was accessed directly from the City of Los Angeles Department of Transportation (LADOT) through the city's Open Data website^2^. The original data set contained 9.97 million rows, each containing details on one parking violation. We identified the fine amount and location data as the most important variables and therefore removed all rows containing empty or NA values in those two columns. This narrowed the amount of rows to about 8.5 million. LADOT uses US Feet coordinates according to the NAD_1983_StatePlane_California projection, which is not easily comparable to standard latitude and longitude values, so our next step was to use **sp** package for R to transform our location data. Our final cleaned data set condained data on 8,502,692 tickets, including information of the time, date, location, vehicle information, parking offense, and more. Although well over the 1 milion row minimum requirement, this large amount of data will allow us to explore the trends in parking violations in LA over a relatively large time frame.  
+  The raw data was accessed directly from the City of Los Angeles Department of Transportation (LADOT) through the city's Open Data website^2^. The original data set contained 9.97 million rows, each containing details on one parking violation. We identified the fine amount and location data as the most important variables and therefore removed all rows containing empty or NA values in those two columns. This narrowed the amount of rows to about 8.5 million. LADOT uses US Feet coordinates according to the NAD_1983_StatePlane_California projection, which is not easily comparable to standard latitude and longitude values, so our next step was to use **sp** package for R to transform our location data. Our final cleaned data set contained data on 8,502,692 tickets, including information of the time, date, location, vehicle information, parking offense, and more. Although well over the 1 milion row minimum requirement, this large amount of data will allow us to explore the trends in parking violations in LA over a relatively large time frame.  
    
    
 ***   
@@ -99,19 +98,27 @@ data.frame(Top_Violations= c("NO PARK/STREET CLEAN", "METER EXP", "RED ZONE"), C
 ##maximum fine
 Parking_Citations%>%
  select(Violation.Description, Fine.amount)%>%
-  filter(Fine.amount ==1100)
+  filter(Fine.amount ==1100)%>%
+  filter(Violation.Description=="DP- RO NOT PRESENT")%>%head(1)%>%knitr::kable()
 
 ## the maximum fine amount is for parking in a disabled parking spot with no DP registration
 
 
 ## what are the hotspots
-
 Parking_Citations %>%
   select(Location)%>%
   group_by(Location)%>%
   summarise(count=n())%>%
   arrange(desc(count))%>%
   head(10)%>% knitr::kable()
+
+
+Parking_Citations%>%select(RP.State.Plate)%>%
+filter(!is.na(RP.State.Plate))%>%
+filter(RP.State.Plate!="CA")%>%
+group_by(RP.State.Plate)%>%
+  summarise(count=n())
+
 ```
     
   Los Angeles is not just a city with horrible traffic, it's also a city where it is terribly hard to park, especially in tourist areas, shopping districts, or other special zones. Over the past decade, The City of Los Angeles collected $591,316,252 digitally. The amount of dollars collected mimicks the movement in the previous graph of citations byt year Our Top_Violations table explains that the top three violations are parking in a street clean area, parking with an experied meter, and parking in a red zone. Street Cleaning happens every day in Los Angeles, albeit on different sides of the roads depending on the day of the week. Because the side of the street that is cleaned changes on a daily bases, many people are caught parking on the wrong side of the road and are penalized. People who are in a hurry, who do know the law, sometimes ignore it or assume that the street cleaner has passed or won't come and are also penalized frequently. Parking in a red zone is The City of Los Ageles's third most frequently cited violation. A red curb, or red zone, indicates no parking, standing or stopping for public safety reasons^3^.  Parking violations vary in their severity. Violating a red zone parking law is a public safety issue, so the fine is more expensive than that of a meter experation ticket, which is stil very expensive! At the very least, do not get caught parking in a disabled vehicle designated spot without reason. That fine will cost you 1100 dollars. 
@@ -144,7 +151,8 @@ Parking_Citations[1:1000, 1:22] %>%
   theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8),
         legend.position = "none") +
   scale_x_discrete(labels = c("Black", "Blue", "Brown", "Gray", "Red", "White")) +
-  scale_fill_manual(values = c("Black", "Blue", "#8B4513", "Gray", "Red", "White"))
+  scale_fill_manual(values = c("Black", "Blue", "#8B4513", "Gray", "Red", "White"))+
+  theme(plot.title = element_text(size=20))
 ```
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
@@ -161,6 +169,7 @@ Parking_Citations %>%
   scale_fill_gradient(low = "Light Sky Blue", high = "Navy Blue") +
   coord_flip() +
   scale_x_discrete(labels = c("Acura", "Audi", "BMW", "Cadillac", "Chevy", "Chrysler", "Dodge", "Ford", "GMC", "Honda", "Hyundai", "Infinity", "Jeep", "Kia", "Lexus", "Land Rover", "Mazda", "Mercedez", "Mitsubishi", "Mini Cooper", "Nissan", "Other", "Subaru", "Toyota", "Volkswagon", "Volvo"))
+
 ```
 
 #### Where do parking violations occur?
@@ -246,7 +255,7 @@ h_parking <- Parking_Citations%>%filter(Issue.Date %in% holidays)%>%
               left_join(holiday_names, by = 'date')
 
 
-h_parking <- h_parking%>%group_by(name)%>%summarise(mean = mean(Fine.amount), sum_prop = sum(Fine.amount)/1965659, count = n()) 
+h_parking <- h_parking%>%group_by(name)%>%summarise(mean = mean(Fine.amount), sum_prop = sum(Fine.amount)/1965659, count = n(), tot = formatC(sum(Fine.amount), format = "d", big.mark = ",")) 
 
 grid.newpage()
 pushViewport(plotViewport(margins = c(1, 1, 1, 1)))
@@ -283,8 +292,30 @@ grid.raster(readPNG("Pictures/PikPng.com_clock-emoji-png_2003036.png"),
             width = h_parking$sum_prop[h_parking$name == "New Years"], 
             height = h_parking$sum_prop[h_parking$name == "New Years"], vp = viewport(layout.pos.row = 1, layout.pos.col = 1))
 
-#grid.text(h_parking$name, x = rep(seq(1, 9, length.out = 4), 2), y = c(rep(-1.25, 4), rep(5.25, 4)), default.units = "cm", vp = vp, gp = gpar(cex = 0.5))
-
+grid.text("New Year's",vp = viewport(layout.pos.row = 1, layout.pos.col = 1),y = 1.5, gp = gpar(cex = 0.5))
+grid.text(paste0('Total: $', h_parking$tot[h_parking$name == "New Years"]), vp = viewport(layout.pos.row = 1, layout.pos.col = 1),
+          y = 1.25, gp = gpar(cex = 0.5))
+grid.text("Super Bowl Sunday",vp = viewport(layout.pos.row = 1, layout.pos.col = 2),y = 1.5, gp = gpar(cex = 0.5))
+grid.text(paste0('$', h_parking$tot[h_parking$name == "Super Bowl Sunday"]), vp = viewport(layout.pos.row = 1, layout.pos.col = 2),
+          y = 1.25, gp = gpar(cex = 0.5))
+grid.text("Valentine's Day",vp = viewport(layout.pos.row = 1, layout.pos.col = 3),y = 1.5, gp = gpar(cex = 0.5))
+grid.text(paste0('$', h_parking$tot[h_parking$name == "Valentine's"]), vp = viewport(layout.pos.row = 1, layout.pos.col = 3),
+          y = 1.25, gp = gpar(cex = 0.5))
+grid.text("St. Patrick's Day",vp = viewport(layout.pos.row = 1, layout.pos.col = 4),y = 1.5, gp = gpar(cex = 0.5))
+grid.text(paste0('$', h_parking$tot[h_parking$name == "St. Patricks"]), vp = viewport(layout.pos.row = 1, layout.pos.col = 4),
+          y = 1.25, gp = gpar(cex = 0.5))
+grid.text("Christmas",vp = viewport(layout.pos.row = 2, layout.pos.col = 4),y = -.25, gp = gpar(cex = 0.5))
+grid.text(paste0('$', h_parking$tot[h_parking$name == "Christmas"]), vp = viewport(layout.pos.row = 2, layout.pos.col = 4),
+          y = -.5, gp = gpar(cex = 0.5))
+grid.text("Thanksgiving",vp = viewport(layout.pos.row = 2, layout.pos.col = 3),y = -.25, gp = gpar(cex = 0.5))
+grid.text(paste0('$', h_parking$tot[h_parking$name == "Thanksgiving"]), vp = viewport(layout.pos.row = 2, layout.pos.col = 3),
+          y = -.5, gp = gpar(cex = 0.5))
+grid.text("Halloween",vp = viewport(layout.pos.row = 2, layout.pos.col = 2),y = -.25, gp = gpar(cex = 0.5))
+grid.text(paste0('$', h_parking$tot[h_parking$name == "Halloween"]), vp = viewport(layout.pos.row = 2, layout.pos.col = 2),
+          y = -.5, gp = gpar(cex = 0.5))
+grid.text("July 4th",vp = viewport(layout.pos.row = 2, layout.pos.col = 1),y = -.25, gp = gpar(cex = 0.5))
+grid.text(paste0('$', h_parking$tot[h_parking$name == "July 4th"]), vp = viewport(layout.pos.row = 2, layout.pos.col = 1),
+          y = -.5, gp = gpar(cex = 0.5))
 ```
 
 Our analysis found a striking difference between the fine amounts for holidays. We observed that holidays typically associated with drinking, New Year's, St. Patrick's Day, and July 4^th^, tended to have more fines issued. We were surprised to find that Christmas and Thanksgiving had the two lowest total fines issued, as we associated these holidays with travel. These lower than expected values could possibly be explained by other variables, however, such as a decrease in LAPD/LADOT staff working on these days or increased leniency. We did expect Halloween to have a large fine amount, as finding legal parking while Trick-or-Treating can be difficult. We expected the Valentines Day's results as well, but were surprised that Super Bowl Sunday was so low, as traveling to parties and drinking often occurs on that day. Super Bowl Sunday, however, is the only holiday that is always on a certain day  of the week, whereas all of the other holidays could fall on any day. This led us to investigate whether the day of the week influenced how citations were issued.  
@@ -325,7 +356,7 @@ The greatest frequency of citations were issued between 8:00am and 2:00pm, with 
 It is a common misconception that ticket frequencies increase at the end of each month as many people believe that officers have monthly quotas to fill. We explored whether an increase in ticket frequency was observed at the end of the month by plotting the total count of tickets for each day of the month for all months.
 ```{r that time of the month, echo=FALSE, message=FALSE, warning=FALSE}
 Parking_Citations%>%mutate(day_of_month = format(as.Date(Issue.Date, format = "%m/%d/%Y"), format="%d"))%>%
-  ggplot() + aes(x = day_of_month) + geom_bar()
+  ggplot() + aes(x = day_of_month, fill = day_of_month) + geom_bar() + labs(x = "Day of the Month", y = "Total Number of Citations", title = "Citations over the Month") + scale_fill_manual(values = c(rep("dark green", 27), rep("red", 4))) + guides(fill = FALSE)
 
 ```
 
