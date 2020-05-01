@@ -251,7 +251,7 @@ h_parking <- Parking_Citations%>%filter(Issue.Date %in% holidays)%>%
               left_join(holiday_names, by = 'date')
 
 
-h_parking <- h_parking%>%group_by(name)%>%summarise(mean = mean(Fine.amount), sum_prop = sum(Fine.amount)/1965659, count = n()) 
+h_parking <- h_parking%>%group_by(name)%>%summarise(mean = mean(Fine.amount), sum_prop = sum(Fine.amount)/1965659, count = n(), tot = formatC(sum(Fine.amount), format = "d", big.mark = ",")) 
 
 grid.newpage()
 pushViewport(plotViewport(margins = c(1, 1, 1, 1)))
@@ -288,8 +288,30 @@ grid.raster(readPNG("Pictures/PikPng.com_clock-emoji-png_2003036.png"),
             width = h_parking$sum_prop[h_parking$name == "New Years"], 
             height = h_parking$sum_prop[h_parking$name == "New Years"], vp = viewport(layout.pos.row = 1, layout.pos.col = 1))
 
-#grid.text(h_parking$name, x = rep(seq(1, 9, length.out = 4), 2), y = c(rep(-1.25, 4), rep(5.25, 4)), default.units = "cm", vp = vp, gp = gpar(cex = 0.5))
-
+grid.text("New Year's",vp = viewport(layout.pos.row = 1, layout.pos.col = 1),y = 1.5, gp = gpar(cex = 0.5))
+grid.text(paste0('Total: $', h_parking$tot[h_parking$name == "New Years"]), vp = viewport(layout.pos.row = 1, layout.pos.col = 1),
+          y = 1.25, gp = gpar(cex = 0.5))
+grid.text("Super Bowl Sunday",vp = viewport(layout.pos.row = 1, layout.pos.col = 2),y = 1.5, gp = gpar(cex = 0.5))
+grid.text(paste0('$', h_parking$tot[h_parking$name == "Super Bowl Sunday"]), vp = viewport(layout.pos.row = 1, layout.pos.col = 2),
+          y = 1.25, gp = gpar(cex = 0.5))
+grid.text("Valentine's Day",vp = viewport(layout.pos.row = 1, layout.pos.col = 3),y = 1.5, gp = gpar(cex = 0.5))
+grid.text(paste0('$', h_parking$tot[h_parking$name == "Valentine's"]), vp = viewport(layout.pos.row = 1, layout.pos.col = 3),
+          y = 1.25, gp = gpar(cex = 0.5))
+grid.text("St. Patrick's Day",vp = viewport(layout.pos.row = 1, layout.pos.col = 4),y = 1.5, gp = gpar(cex = 0.5))
+grid.text(paste0('$', h_parking$tot[h_parking$name == "St. Patricks"]), vp = viewport(layout.pos.row = 1, layout.pos.col = 4),
+          y = 1.25, gp = gpar(cex = 0.5))
+grid.text("Christmas",vp = viewport(layout.pos.row = 2, layout.pos.col = 4),y = -.25, gp = gpar(cex = 0.5))
+grid.text(paste0('$', h_parking$tot[h_parking$name == "Christmas"]), vp = viewport(layout.pos.row = 2, layout.pos.col = 4),
+          y = -.5, gp = gpar(cex = 0.5))
+grid.text("Thanksgiving",vp = viewport(layout.pos.row = 2, layout.pos.col = 3),y = -.25, gp = gpar(cex = 0.5))
+grid.text(paste0('$', h_parking$tot[h_parking$name == "Thanksgiving"]), vp = viewport(layout.pos.row = 2, layout.pos.col = 3),
+          y = -.5, gp = gpar(cex = 0.5))
+grid.text("Halloween",vp = viewport(layout.pos.row = 2, layout.pos.col = 2),y = -.25, gp = gpar(cex = 0.5))
+grid.text(paste0('$', h_parking$tot[h_parking$name == "Halloween"]), vp = viewport(layout.pos.row = 2, layout.pos.col = 2),
+          y = -.5, gp = gpar(cex = 0.5))
+grid.text("July 4th",vp = viewport(layout.pos.row = 2, layout.pos.col = 1),y = -.25, gp = gpar(cex = 0.5))
+grid.text(paste0('$', h_parking$tot[h_parking$name == "July 4th"]), vp = viewport(layout.pos.row = 2, layout.pos.col = 1),
+          y = -.5, gp = gpar(cex = 0.5))
 ```
 
 Our analysis found a striking difference between the fine amounts for holidays. We observed that holidays typically associated with drinking, New Year's, St. Patrick's Day, and July 4^th^, tended to have more fines issued. We were surprised to find that Christmas and Thanksgiving had the two lowest total fines issued, as we associated these holidays with travel. These lower than expected values could possibly be explained by other variables, however, such as a decrease in LAPD/LADOT staff working on these days or increased leniency. We did expect Halloween to have a large fine amount, as finding legal parking while Trick-or-Treating can be difficult. We expected the Valentines Day's results as well, but were surprised that Super Bowl Sunday was so low, as traveling to parties and drinking often occurs on that day. Super Bowl Sunday, however, is the only holiday that is always on a certain day  of the week, whereas all of the other holidays could fall on any day. This led us to investigate whether the day of the week influenced how citations were issued.  
