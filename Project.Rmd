@@ -1,9 +1,9 @@
 ---
 title: "Parking Violations in LA"
 author: "Matthew Barclay, Griffin Coccari, Alex Gallegos, Anushi Singhal"
-output: pdf_document:
-  toc: true
-  theme: united
+output: pdf_document
+toc: true
+theme: united
 fontsize: 10pt
 geometry: margin=1in
 ---
