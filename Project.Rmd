@@ -374,7 +374,7 @@ crime500Map <- ggmap(map) +
                  geom = "polygon", size = 0.01, bins = 16) +
   scale_fill_gradient(low = "red", high = "yellow") +
   scale_alpha(range = c(0, 1), guide = FALSE) + 
-  theme(axis.text.x = element_text(hjust  = 1, angle = 45)) + labs(title = "Moderate Crime")
+  theme(axis.text.x = element_text(hjust  = 1, angle = 45)) + labs(title = "Less Severe Crime")
 
 ## badCrime map
 map <- get_map(getbb("Los Angeles"), zoom = 10, map_type = "roadmap")
@@ -383,7 +383,7 @@ badCrimeMap <- ggmap(map) +
                  geom = "polygon", size = 0.01, bins = 16) +
   scale_fill_gradient(low = "red", high = "yellow") +
   scale_alpha(range = c(0, 1), guide = FALSE) + 
-  theme(axis.text.x = element_text(hjust  = 1, angle = 45)) + labs(title = "Bad Crime")
+  theme(axis.text.x = element_text(hjust  = 1, angle = 45)) + labs(title = "Severe Crime")
 
 
 
@@ -402,18 +402,21 @@ crimeMap <- ggmap(map) +
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 
 grid.newpage()
-ly <- grid.layout(1, 3)
+ly <- grid.layout(1, 2)
+pushViewport(viewport(layout = ly))
+print(crimeMap, vp = viewport(layout.pos.row = 1, layout.pos.col = 1))
+print(weatherMap, vp = viewport(layout.pos.row = 1, layout.pos.col = 2))
+
+grid.newpage()
+ly <- grid.layout(1,1)
 pushViewport(viewport(layout = ly))
 print(overallMap, vp = viewport(layout.pos.row = 1, layout.pos.col = 1))
-print(weatherMap, vp = viewport(layout.pos.row = 1, layout.pos.col = 2))
-print(crimeMap, vp = viewport(layout.pos.row = 1, layout.pos.col = 3))
-
 ```
 
-The graphs show the density of parking citations in LA, the density of parking citations when weather was above half an inch of rain, and all crime in LA. From these heatmaps we can see that though there is a greater spread with crime over the downtown LA area, there is a big concentration around the central downtown area. It should be noted that the concentration of crime is much lower as shown by the legend on the graph, but the heatmap does still show that there is still a concentration centrered around downtown LA. 
+  The graphs show the density of parking citations in LA, the density of parking citations when weather was above half an inch of rain, and all crime in LA. From these heatmaps we can see that though there is a greater spread with crime over the downtown LA area, there is a big concentration around the central downtown area. It should be noted that the concentration of crime is much lower as shown by the legend on the graph, but the heatmap does still show that there is still a concentration centrered around downtown LA. 
 
 ###### Crime and its effect
-The crime map does account for overall crime regardless of severity, so we thought that it would be a good idea to rate the crime by severity. In our data for crime, we are supplied with crime codes that indicate the type of crime commited. Because the crime codes are known and this is a database of reported crimes for LA we can assume that this would give a fairly accurate map of crime activity in LA. We also made the assumption that if there is more crime in an area it is more likely that there is increased police activity in that area, and therefore more citations have the possibility of being given. Crime codes are on a numeric scale where the lower the crime code number, the more severe the offense, so we thought that it would be an interesting idea to see whether the types of crimes in regards to severity of offense had any correlation to parking citations. i.e. do hotspots with more severe crimes also tend to have more parking citations? With or data we plotted the heatmaps below.
+  The crime map does account for overall crime regardless of severity, so we thought that it would be a good idea to rate the crime by severity. In our data for crime, we are supplied with crime codes that indicate the type of crime commited. Because the crime codes are known and this is a database of reported crimes for LA we can assume that this would give a fairly accurate map of crime activity in LA. We also made the assumption that if there is more crime in an area it is more likely that there is increased police activity in that area, and therefore more citations have the possibility of being given. Crime codes are on a numeric scale where the lower the crime code number, the more severe the offense, so we thought that it would be an interesting idea to see whether the types of crimes in regards to severity of offense had any correlation to parking citations. i.e. do hotspots with more severe crimes also tend to have more parking citations? With or data we plotted the heatmaps below.
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 
 grid.newpage()
@@ -423,11 +426,14 @@ print(crime500Map, vp = viewport(layout.pos.row = 1, layout.pos.col = 1))
 print(badCrimeMap, vp = viewport(layout.pos.row = 1, layout.pos.col = 2))
 ```
 
-As shown in the graphs moderate crime with a moderate crime code tends to be way more spread out over the city when compared to the severe crime. Looking at the legends also gives credence to this as the density is way less than that of the severe crime with severe crime being extremely concentrated and much more dense than the moderate crime. When we compare to our parking citation data, we can see that there is an overlap in the central downtown area, but besides that there is much more crime happening outside of 
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
+  As shown in the graphs moderate crime with a moderate crime code tends to be way more spread out over the city when compared to the severe crime. Looking at the legends also gives credence to this as the density is way less than that of the severe crime with severe crime being extremely concentrated and much more dense than the moderate crime. When we compare to our parking citation data, we can see that there is an overlap in the central downtown area, but besides that there is still a lot of crime happening outside of the area regardless of severity suggesting that crime does not necessarily correlate to parking citations.
+
+##### Demographic areas
+  Using our crime database we can find the demographics by crime and see in which areas crime happens based on demographic. By plotting these maps we can find demographic data by region  which we can use to see whether or not there are demographic differences in parking citations frequency.
+```{r, fig.height = 9, fig.width = 12, align = 'center', echo=FALSE, warning=FALSE, message=FALSE}
 demMap
 ```
-
+  Using this data, we can see that every one of our ethnicities does go around the central downtown LA area. We also see certain trends with our severe crime data. People of Black descent appear to be closer in proximity to the severe crime hotspot and people of Chinese descent appear to be further from the more severe crimes in the area.
 #### When do violations occur?  
 
 
