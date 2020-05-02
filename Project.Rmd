@@ -147,7 +147,7 @@ Parking_Citations %>%
 
   Parking citations and violations seem to be universal, affecting every vehicle on the road all the same. But with access to such large amounts of data, we wanted to know whether all vehicles had the same chance of recieving a parking violation. 
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
+```{r echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE, out.width="0.65\\linewidth", out.height="0.65\\linewidth", fig.align="center"}
 ggplot(map_data("state")%>%left_join(Parking_Citations%>%group_by(RP.State.Plate)%>%summarise(count = n())%>%left_join(read.csv('statename.csv'))%>%filter(!is.na(region), region != "california"))) + aes(long, lat, group = group) +
   geom_polygon(aes(fill = count), color = "white") + scale_fill_viridis_c(option = "C") + theme_void() + theme(legend.position = c(.11, .165)) +
   labs(fill = "Number of Citations", title = "Number of Citations for Vehicles with Out of State Registration")
@@ -583,7 +583,7 @@ The greatest frequency of citations were issued between 8:00am and 2:00pm, with 
 
 ###### Quotas
 It is a common misconception that ticket frequencies increase at the end of each month as many people believe that officers have monthly quotas to fill. We explored whether an increase in ticket frequency was observed at the end of the month by plotting the total count of tickets for each day of the month for all months.
-```{r that time of the month, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
+```{r that time of the month, echo=FALSE, fig.height=4, message=FALSE, warning=FALSE, cache=TRUE, fig.align="center}
 Parking_Citations%>%mutate(day_of_month = format(as.Date(Issue.Date, format = "%m/%d/%Y"), format="%d"))%>%
   ggplot() +aes(x = day_of_month, fill = day_of_month)+ geom_bar() + labs(x = "Day of the Month", y = "Total Number of Citations", title = "Citations over the Month") + scale_fill_manual(values = c(rep("dark green", 27), rep("red", 4))) + guides(fill = FALSE)
 
