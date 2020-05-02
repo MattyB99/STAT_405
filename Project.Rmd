@@ -1,11 +1,14 @@
 ---
-title: "Parking Violations in LA"
+title: "Your Project Title"
 author: "Matthew Barclay, Griffin Coccari, Alex Gallegos, Anushi Singhal"
 output: pdf_document
+<<<<<<< HEAD
+=======
 toc: true
 toc_depth: 3
 number_sections: true
 theme: united
+>>>>>>> 3bb89e509bab1f45a34623f078790401b9efb0bf
 fontsize: 10pt
 geometry: margin=1in
 ---
@@ -441,10 +444,6 @@ demMap
 ```
   Using this data, we can see that every one of our ethnicities does go around the central downtown LA area. We also see certain trends with our severe crime data. People of Black descent appear to be closer in proximity to the severe crime hotspot and people of Chinese descent appear to be further from the more severe crimes in the area. When we compare to parking citations it would suggest not only that crime has no effect on parking citations, but also that demographics does not necessarily contribute to frequency of citations and certain areas may not more likely to receive citations because of their ethnic makeup. 
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
-demMap
-```
-
 
 ### When do violations occur?  
 
@@ -579,8 +578,9 @@ As seen in the plot, not only did we find no evidence of citation frequency ramp
 ### Conclusions
 we did traditional analysis but also looked at the dataset from different angles
 
-The Parking Citaitons Analysis evolved into more than just a matter of counting. Our first graphs uncovered startling statistics about prices and fines. When looking at the most cited color and car types, our analysis revealed that special vehicles like ambulances, golf carts, forklifts, and tankers also were subject to Los Angeles parking enforcement. Excited by the potential of what this dataset offered, we saught to use complementary datasets to dive deeper into the socio-economic, cultural, and geographical effects on Los Angeles parking Citations. 
+  The Parking Citaitons Analysis evolved into more than just a matter of counting. Our first graphs uncovered startling statistics about prices and fines. When looking at the most cited color and car types, our analysis revealed that special vehicles like ambulances, golf carts, forklifts, and tankers also were subject to Los Angeles parking enforcement. Excited by the potential of what this dataset offered, we saught to use complementary datasets to dive deeper into the socio-economic, cultural, and geographical effects on Los Angeles parking Citations. 
 
+  The analysis also 
 
 ### References:
 1. https://la.streetsblog.org/2010/12/13/density-car-ownership-and-what-it-means-for-the-future-of-los-angeles/  
