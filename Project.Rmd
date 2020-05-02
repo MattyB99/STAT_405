@@ -41,7 +41,7 @@ mapdeck(pitch = 45, zoom = 100) %>%
            colour_range = viridisLite::plasma(6))} 
 ```
 
-```{r 3D_Map, echo=FALSE, out.width="0.5\\linewidth", out.height="0.5\\linewidth", fig.align="center", message=FALSE, warning=FALSE}
+```{r 3D_Map, echo=FALSE, out.width="0.69\\linewidth", out.height="0.69\\linewidth", fig.align="center", message=FALSE, warning=FALSE}
 if(!knitr::is_html_output()) {knitr::include_graphics("3D_Map.png") }
 ```
 
@@ -421,7 +421,7 @@ demMap
 
 ###### Holiday Parking  
   Major holidays account for some of the busiest travel days in the year, so we decided to investigate how the total amount of money collected on each day was distributed. We selected New Year's Eve, Super Bowl Sunday, Valentine's Day, St. Patrick's Day, July 4^th^, Halloween, Thanksgiving, and Christmas and summed up the fines issued for each day. The totals were then plotted proportionally for each holiday seen below.  
-```{r holidays, echo=FALSE, message=FALSE, warning=FALSE, fig.align="center"}
+```{r holidays, echo=FALSE, fig.align="center", message=FALSE, warning=FALSE, out.width="1.5\\linewidth", out.height="1.5\\linewidth"}
 holidays <- c("12/25/2014", "12/25/2015", "12/25/2016", "12/25/2017", "12/25/2018", "12/25/2019", 
               "12/31/2014", "12/31/2015", "12/31/2016", "12/31/2017", "12/31/2018", "12/31/2019", 
               "11/27/2014", "11/26/2015", "11/24/2016", "11/23/2017", "11/22/2018", "11/28/2019",
