@@ -41,7 +41,7 @@ mapdeck(pitch = 45, zoom = 100) %>%
            colour_range = viridisLite::plasma(6))} 
 ```
 
-```{r 3D_Map, echo=FALSE, out.width="0.5\\linewidth", out.height="0.5\\linewidth", fig.align="center", message=FALSE, warning=FALSE}
+```{r 3D_Map, echo=FALSE, out.width="0.69\\linewidth", out.height="0.69\\linewidth", fig.align="center", message=FALSE, warning=FALSE}
 if(!knitr::is_html_output()) {knitr::include_graphics("3D_Map.png") }
 ```
 
@@ -133,6 +133,8 @@ Parking_Citations %>%
 
 #### Who receives parking citations?
 
+  
+
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 ggplot(map_data("state")%>%left_join(Parking_Citations%>%group_by(RP.State.Plate)%>%summarise(count = n())%>%left_join(read.csv('statename.csv'))%>%filter(!is.na(region), region != "california"))) + aes(long, lat, group = group) +
   geom_polygon(aes(fill = count), color = "white") + scale_fill_viridis_c(option = "C")
@@ -214,7 +216,8 @@ b <- Parking_Citations %>%
   ggplot() + aes(x = Body.Style, y = avg, fill = ..x..) + geom_histogram(stat = "identity") +
   theme(panel.background = element_rect(fill = "gray75"),
         legend.position = "none",
-        axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8)) +
+        axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8),
+        axis.title.x = element_blank()) +
   labs(x = "Professional Vehicles") +
   scale_fill_gradient(low = "Light Sky Blue", high = "Navy Blue") +
   scale_x_discrete(labels = c("Ambulance", "Bus", "Forklift", "Limo", "Tanker", "Trailer"))
@@ -423,16 +426,27 @@ print(crime500Map, vp = viewport(layout.pos.row = 1, layout.pos.col = 1))
 print(badCrimeMap, vp = viewport(layout.pos.row = 1, layout.pos.col = 2))
 ```
 
+
+  As shown in the graphs moderate crime with a moderate crime code tends to be way more spread out over the city when compared to the severe crime. Looking at the legends also gives credence to this as the density is way less than that of the severe crime with severe crime being extremely concentrated and much more dense than the moderate crime. When we compare to our parking citation data, we can see that there is an overlap in the central downtown area, but besides that there is still a lot of crime happening outside of the area regardless of severity suggesting that crime does not necessarily correlate to parking citations.
+
+##### Demographic areas
+  Using our crime database we can find the demographics by crime and see in which areas crime happens based on demographic. By plotting these maps we can find demographic data by region which we can use to see whether or not there are demographic differences in parking citations frequency.
+```{r, fig.height = 6, fig.width = 7, align = 'center', echo=FALSE, warning=FALSE, message=FALSE}
+demMap
+```
+  Using this data, we can see that every one of our ethnicities does go around the central downtown LA area. We also see certain trends with our severe crime data. People of Black descent appear to be closer in proximity to the severe crime hotspot and people of Chinese descent appear to be further from the more severe crimes in the area. When we compare to parking citations it would suggest not only that crime has no effect on parking citations, but also that demographics does not necessarily contribute to frequency of citations and certain areas may not more likely to receive citations because of their ethnic makeup. 
+
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 demMap
 ```
+
 
 #### When do violations occur?  
 
 
 ###### Holiday Parking  
   Major holidays account for some of the busiest travel days in the year, so we decided to investigate how the total amount of money collected on each day was distributed. We selected New Year's Eve, Super Bowl Sunday, Valentine's Day, St. Patrick's Day, July 4^th^, Halloween, Thanksgiving, and Christmas and summed up the fines issued for each day. The totals were then plotted proportionally for each holiday seen below.  
-```{r holidays, echo=FALSE, message=FALSE, warning=FALSE, fig.align="center"}
+```{r holidays, echo=FALSE, fig.align="center", message=FALSE, warning=FALSE, out.width="1.5\\linewidth", out.height="1.5\\linewidth"}
 holidays <- c("12/25/2014", "12/25/2015", "12/25/2016", "12/25/2017", "12/25/2018", "12/25/2019", 
               "12/31/2014", "12/31/2015", "12/31/2016", "12/31/2017", "12/31/2018", "12/31/2019", 
               "11/27/2014", "11/26/2015", "11/24/2016", "11/23/2017", "11/22/2018", "11/28/2019",
@@ -542,7 +556,7 @@ ggplot(data = Parking_Citations)  + labs(title = "Frequency of Parking Tickets T
   geom_histogram(aes(x = Issue.time,y = ..density.., fill = ..x..),  binwidth = 100, boundary = 0, closed = "left") + 
   scale_fill_gradient(low = "Gold", high = "Navy Blue")+ theme(axis.text.x = element_text(hjust = 1, angle = 45), panel.background = element_rect(fill = "gray75")) +
   scale_x_continuous(breaks = seq(0, 2300, 100), labels = paste(seq(0, 23, 1), "00", sep = ":")) +
-  geom_density(aes(x = Issue.time), size = 1.5) +  guides(fill = FALSE)
+  geom_density(aes(x = Issue.time), size = 1) +  guides(fill = FALSE)
 ```
 The greatest frequency of citations were issued between 8:00am and 2:00pm, with peaks occurring in the first half of each hour. Unsurprisingly, very few citations were issued in the early hours of the morning, wth the lowest frequency occurring between 5:00-6:00am.
 
