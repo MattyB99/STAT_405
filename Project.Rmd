@@ -133,7 +133,13 @@ Parking_Citations %>%
 
 #### Who receives parking citations?
 
+<<<<<<< HEAD
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
+=======
+  
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+>>>>>>> a87e7d9edf39f530b64d6618561f4d50508afa45
 ggplot(map_data("state")%>%left_join(Parking_Citations%>%group_by(RP.State.Plate)%>%summarise(count = n())%>%left_join(read.csv('statename.csv'))%>%filter(!is.na(region), region != "california"))) + aes(long, lat, group = group) +
   geom_polygon(aes(fill = count), color = "white") + scale_fill_viridis_c(option = "C") + theme_void() + theme(legend.position = c(.1, .17)) +
   labs(fill = "Number of Citations", title = "Number of Citations for Vehicles with Out of State Registration")
@@ -425,9 +431,22 @@ print(crime500Map, vp = viewport(layout.pos.row = 1, layout.pos.col = 1))
 print(badCrimeMap, vp = viewport(layout.pos.row = 1, layout.pos.col = 2))
 ```
 
+  As shown in the graphs moderate crime with a moderate crime code tends to be way more spread out over the city when compared to the severe crime. Looking at the legends also gives credence to this as the density is way less than that of the severe crime with severe crime being extremely concentrated and much more dense than the moderate crime. When we compare to our parking citation data, we can see that there is an overlap in the central downtown area, but besides that there is still a lot of crime happening outside of the area regardless of severity suggesting that crime does not necessarily correlate to parking citations.
+
+##### Demographic areas
+  Using our crime database we can find the demographics by crime and see in which areas crime happens based on demographic. By plotting these maps we can find demographic data by region which we can use to see whether or not there are demographic differences in parking citations frequency.
+  
+  
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
 demMap
 ```
+  Using this data, we can see that every one of our ethnicities does go around the central downtown LA area. We also see certain trends with our severe crime data. People of Black descent appear to be closer in proximity to the severe crime hotspot and people of Chinese descent appear to be further from the more severe crimes in the area. When we compare to parking citations it would suggest not only that crime has no effect on parking citations, but also that demographics does not necessarily contribute to frequency of citations and certain areas may not more likely to receive citations because of their ethnic makeup. 
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+>>>>>>> a87e7d9edf39f530b64d6618561f4d50508afa45
+demMap
+```
+
 
 #### When do violations occur?  
 
