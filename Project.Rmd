@@ -3,6 +3,8 @@ title: "Parking Violations in LA"
 author: "Matthew Barclay, Griffin Coccari, Alex Gallegos, Anushi Singhal"
 output: pdf_document
 toc: true
+toc_depth: 3
+number_sections: true
 theme: united
 fontsize: 10pt
 geometry: margin=1in
@@ -133,12 +135,12 @@ Parking_Citations %>%
   theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8))
 ```
 
-#### Who receives parking citations?
+### Who receives parking citations?
 
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
 ggplot(map_data("state")%>%left_join(Parking_Citations%>%group_by(RP.State.Plate)%>%summarise(count = n())%>%left_join(read.csv('statename.csv'))%>%filter(!is.na(region), region != "california"))) + aes(long, lat, group = group) +
-  geom_polygon(aes(fill = count), color = "white") + scale_fill_viridis_c(option = "C") + theme_void() + theme(legend.position = c(.1, .17)) +
+  geom_polygon(aes(fill = count), color = "white") + scale_fill_viridis_c(option = "C") + theme_void() + theme(legend.position = c(.11, .165)) +
   labs(fill = "Number of Citations", title = "Number of Citations for Vehicles with Out of State Registration")
 ```
 
@@ -245,7 +247,7 @@ popViewport(1)
 ```
 
 
-#### Where do parking violations occur?
+### Where do parking violations occur?
 
 ```{r lat/lon, eval=FALSE, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
 #will not run with eval = FALSE
@@ -444,7 +446,7 @@ demMap
 ```
 
 
-#### When do violations occur?  
+### When do violations occur?  
 
 
 ###### Holiday Parking  
@@ -574,13 +576,13 @@ Parking_Citations%>%mutate(day_of_month = format(as.Date(Issue.Date, format = "%
 As seen in the plot, not only did we find no evidence of citation frequency ramping up toward the end of the month, we found that citation frequency tends to remain relatively stable. The extremely low frequency on days that are the 31^st^ of the month is caused by only 7 out of 12 months having 31 days.
 
 
-#### Conclusions
+### Conclusions
 we did traditional analysis but also looked at the dataset from different angles
 
 The Parking Citaitons Analysis evolved into more than just a matter of counting. Our first graphs uncovered startling statistics about prices and fines. When looking at the most cited color and car types, our analysis revealed that special vehicles like ambulances, golf carts, forklifts, and tankers also were subject to Los Angeles parking enforcement. Excited by the potential of what this dataset offered, we saught to use complementary datasets to dive deeper into the socio-economic, cultural, and geographical effects on Los Angeles parking Citations. 
 
 
-##### References:
+### References:
 1. https://la.streetsblog.org/2010/12/13/density-car-ownership-and-what-it-means-for-the-future-of-los-angeles/  
 2. https://data.lacity.org/A-Well-Run-City/Parking-Citations/wjz9-h9np  
 3. https://ladot.lacity.org/residents/colored-curb-zones  
