@@ -136,7 +136,7 @@ Parking_Citations %>%
   theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8))
 ```
 
-### Who receives parking citations?
+### Who receives parking citations?  
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
 ggplot(map_data("state")%>%left_join(Parking_Citations%>%group_by(RP.State.Plate)%>%summarise(count = n())%>%left_join(read.csv('statename.csv'))%>%filter(!is.na(region), region != "california"))) + aes(long, lat, group = group) +
@@ -157,13 +157,11 @@ Parking_Citations %>%
   scale_x_discrete(labels = c("Black", "Blue", "Brown", "Gray", "Red", "White")) +
   scale_fill_manual(values = c("Black", "Blue", "#8B4513", "Gray", "Red", "White"))
 ```
-<<<<<<< HEAD
+
 ***
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
-=======
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
->>>>>>> 19ddcc87eccd7f81e3a499956afe3e58977a3dc2
+
 #Average fine by Make of car 
 Parking_Citations %>% 
   filter(!is.na(Fine.amount)) %>%
@@ -452,7 +450,7 @@ demMap
 
 ###### Holiday Parking  
   Major holidays account for some of the busiest travel days in the year, so we decided to investigate how the total amount of money collected on each day was distributed. We selected New Year's Eve, Super Bowl Sunday, Valentine's Day, St. Patrick's Day, July 4^th^, Halloween, Thanksgiving, and Christmas and summed up the fines issued for each day. The totals were then plotted proportionally for each holiday seen below.  
-```{r holidays, echo=FALSE, fig.align="center", message=FALSE, warning=FALSE, out.width="1.15\\linewidth", out.height="1.15\\linewidth", cache=TRUE}
+```{r holidays, echo=FALSE, fig.align="center", message=FALSE, warning=FALSE, out.width="0.75\\linewidth", out.height="0.75\\linewidth", cache=TRUE}
 holidays <- c("12/25/2014", "12/25/2015", "12/25/2016", "12/25/2017", "12/25/2018", "12/25/2019", 
               "12/31/2014", "12/31/2015", "12/31/2016", "12/31/2017", "12/31/2018", "12/31/2019", 
               "11/27/2014", "11/26/2015", "11/24/2016", "11/23/2017", "11/22/2018", "11/28/2019",
