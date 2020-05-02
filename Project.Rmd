@@ -37,6 +37,7 @@ library(knitr)
 Parking_Citations <- readRDS(file = "Parking_Citations.rds")
 ```
 
+   
 \newpage
 
 ## Introduction  
@@ -164,10 +165,8 @@ Parking_Citations %>%
   scale_fill_manual(values = c("Black", "Blue", "#8B4513", "Gray", "Red", "White"))
 ```
 
-***
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
-
 #Average fine by Make of car 
 Parking_Citations %>% 
   filter(!is.na(Fine.amount)) %>%
@@ -585,8 +584,7 @@ As seen in the plot, not only did we find no evidence of citation frequency ramp
 
 The Parking Citaitons Analysis evolved into more than just a matter of counting. Our first graphs uncovered startling statistics about prices and fines. When looking at the most cited color and car types, our analysis revealed that special vehicles like ambulances, golf carts, forklifts, and tankers also were subject to Los Angeles parking enforcement. Excited by the potential of what this dataset offered, we used complementary datasets to dive deeper into the socio-economic, cultural, and meteorological effects on Los Angeles parking Citations. More than just viewing the dataset at face value, we saw how parking ciations explained larger picture characteristics about the city of Los Angeles, but especially in regards to traffic and parking citaitons. At every turn, we discovered new, unique insights, which, even if they had less cohesiveness together than we had hoped, opened up even greater questions
 
-
-  The analysis also shows 
+The analysis also shows that a lot of notions one might assume about weather and demographic bias in LA might not be accurate in regards to geographic data. When observing the data shown as a heatmap it can be shown that crime hotspots do not necessarily correlate to a hotspot for parking citations. Weather on the other hand can be shown to have a similar hotspot to the parking citation data as a whole. This could be because the parking citations simply do have a hotspot in central downtown LA, notably on days that have half an inch or more of rain, those still are centralized on the same area as parking citations. The final insight gained from geographic data, is that demographic data does not necessarily have an effect on the hotspot of parking citations. In fact, the only places where all demographic data overlapped is the hotspot of parking citations which suggests that demographic region does not necessarily mean there is an increase in parkinng citations risk. Going forward, if it were possible to incorporate income data for each geographic region, that could be used to fnd correlations with parking citations.
 
 1.
 Newton, Damien, et al. “Density, Car Ownership, and What It Means for the Future of Los Angeles.” Streetsblog Los Angeles, 13 Dec. 2010, la.streetsblog.org/2010/12/13/density-car-ownership-and-what-it-means-for-the-future-of-los-angeles/.
@@ -595,8 +593,7 @@ Newton, Damien, et al. “Density, Car Ownership, and What It Means for the Futu
 “Parking Citations: Los Angeles - Open Data Portal.” Data.lacity.org, 13 Feb. 2020, data.lacity.org/A-Well-Run-City/Parking-Citations/wjz9-h9np.3. 
 
 3.
-“Parking Citations: Los Angeles - Open Data Portal.” Data.lacity.org, 13 Feb. 2020, data.lacity.org/A-Well-Run-City/Parking-Citations/wjz9-h9np.
-
+“Colored Curb Zones.” LADOT, ladot.lacity.org/residents/colored-curb-zones.
 
 
 
