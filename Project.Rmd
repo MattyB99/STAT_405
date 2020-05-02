@@ -135,9 +135,10 @@ Parking_Citations %>%
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 ggplot(map_data("state")%>%left_join(Parking_Citations%>%group_by(RP.State.Plate)%>%summarise(count = n())%>%left_join(read.csv('statename.csv'))%>%filter(!is.na(region), region != "california"))) + aes(long, lat, group = group) +
-  geom_polygon(aes(fill = count), color = "white") + scale_fill_viridis_c(option = "C")
+  geom_polygon(aes(fill = count), color = "white") + scale_fill_viridis_c(option = "C") + theme_void() + theme(legend.position = c(0.1,0.17)) + 
+  labs(fill = "Number of Citations", title = "Citations Issued by State of Vehicle Registration")
 ```
-
+  It appears that for citations written for vehicles from outside of California, the states that received the most are either nearby states-- Arizona, Nevada, and Oregon --or highly populated states, such as Texas and Florida.
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 #Average fine amount by car Color
 Parking_Citations %>% 
