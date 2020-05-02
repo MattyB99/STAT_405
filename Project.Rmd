@@ -424,7 +424,7 @@ crimeMap <- ggmap(map) +
 
 ##### Does weather or crime affect the parking convictions overall?
   In our investigation of how parking citations are distributed across the city of LA, we wondered how crime data and potentially weather data would fit in with our parking citations data. We used 2 SQL databases of both LA weather and LA crime to compare with our initial data. By using a heatmap on the city of LA with out data we can see different concentrations of crime, weather, etc., and in conjunction with our initial dataset we can see if there are any correlations between crime, weather, and our parking citations. 
-```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE,  fig.height=4, fig.width=7, fig.align='center'}
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE,  fig.height=3, fig.width=7, fig.align='center'}
 
 grid.newpage()
 ly <- grid.layout(1, 2)
