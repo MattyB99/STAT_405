@@ -133,8 +133,6 @@ Parking_Citations %>%
 
 #### Who receives parking citations?
 
-  
-
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 ggplot(map_data("state")%>%left_join(Parking_Citations%>%group_by(RP.State.Plate)%>%summarise(count = n())%>%left_join(read.csv('statename.csv'))%>%filter(!is.na(region), region != "california"))) + aes(long, lat, group = group) +
   geom_polygon(aes(fill = count), color = "white") + scale_fill_viridis_c(option = "C")
@@ -153,7 +151,7 @@ Parking_Citations %>%
   scale_x_discrete(labels = c("Black", "Blue", "Brown", "Gray", "Red", "White")) +
   scale_fill_manual(values = c("Black", "Blue", "#8B4513", "Gray", "Red", "White"))
 ```
-
+***
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 #Average fine by Make of car 
 Parking_Citations %>% 
@@ -578,10 +576,14 @@ The Parking Citaitons Analysis evolved into more than just a matter of counting.
 
 
 ##### References:
-1. https://la.streetsblog.org/2010/12/13/density-car-ownership-and-what-it-means-for-the-future-of-los-angeles/  
-2. https://data.lacity.org/A-Well-Run-City/Parking-Citations/wjz9-h9np  
-3. https://ladot.lacity.org/residents/colored-curb-zones  
-4. 
+1.
+Newton, Damien, et al. “Density, Car Ownership, and What It Means for the Future of Los Angeles.” Streetsblog Los Angeles, 13 Dec. 2010, la.streetsblog.org/2010/12/13/density-car-ownership-and-what-it-means-for-the-future-of-los-angeles/.
+
+2.
+“Parking Citations: Los Angeles - Open Data Portal.” Data.lacity.org, 13 Feb. 2020, data.lacity.org/A-Well-Run-City/Parking-Citations/wjz9-h9np.3. 
+
+3.
+“Parking Citations: Los Angeles - Open Data Portal.” Data.lacity.org, 13 Feb. 2020, data.lacity.org/A-Well-Run-City/Parking-Citations/wjz9-h9np.
 
 
 
