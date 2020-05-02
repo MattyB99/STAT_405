@@ -33,7 +33,11 @@ library(knitr)
 
 Parking_Citations <- readRDS(file = "Parking_Citations.rds")
 ```
-### Introduction  
+
+   
+\newpage
+
+## Introduction  
    Alex, Anushi, Matt and Griffin all come from different backrounds and majors, so in disucssions for which dataset we wanted to analyze, we explored a wide range of topics from public health to the New York City subway We eventually decided to take on data from another large metropolis, but this time in sunny Los Angeles. In Los Angeles, the beautiful beaches, countless celebrities, and hollywood homes are magical for visitors. However, LA traffic is often very bad and parking in tourist areas can be a nightmare. As the second largest city in the United States, there are over 6.4 million vehicles in the Los Angeles urbanized area^1^. Our dataset, Parking_Citations, contains all the details of nearly 10 million parking violations in Los Angeles from 2010 to the present. That means we have access to the records that account for fines totalling close to $600 million. With so much money at stake and the huge volume of data, the city of Los Angeles keeps track of these records electronically. We intend to take this massive amount of data and transform it so that the intricacies of parking violations can be easily understood.  
 
 ```{r 3D Heatmap, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
@@ -85,7 +89,7 @@ popViewport(2)
 ```
 
 When we began our analysis, we had to get some idea of what we were dealing with. With no instructions, We first boiled down the data into a more understandble form. The data gave us a good amount of information, and it also gave us a good starting point. The data showed a skewed distrubution over 11 year span. From 2010 to 2014 there were less than 40 parking citations recorded. In 2014 that number increased to 34,000. After that, we saw a drastic 44 percent change into 2015, when 1,541,535 parking citations were recorded. The count peaked at 2,154,321 citations in 2017. This peak accentuated both the steep rise leading up to 2017 and also the suprisingly steep decline afterwards. While this graph gave us a good handle on the numbers, there were questions unanswered about the data collection.The  drastic increase from 2014-2015 may be explained by an attempt by the City of Los Angeles to digitize their citations. But that explanation is contradicted by the equally sharp decline after 2017. This left the question of how many citations did they actually collect? The graph didn't tell us exactly, but it gives us a range of values that captures the true value or something close. Even without the actual answer, this graph highlighted the magnitude of the citaitons in LA.
-##Basic Graphs
+#### Basic Graphs
 ```{r dollars per year, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
 data.frame(Year=c(seq(from=2010, to=2020, by=1), "Total"),
          "Dollars_Collected" =c(730, 630, 2276, 3062, 2371400, 107172874, 130124585,151608139,124738695,75291586,2275, sum(c(730, 630, 2276, 3062, 2371400, 107172874, 130124585,151608139,124738695,75291586,2275))))%>%knitr::kable()
@@ -136,7 +140,7 @@ Parking_Citations %>%
   theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8))
 ```
 
-### Who receives parking citations?  
+## Who receives parking citations?  
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
 ggplot(map_data("state")%>%left_join(Parking_Citations%>%group_by(RP.State.Plate)%>%summarise(count = n())%>%left_join(read.csv('statename.csv'))%>%filter(!is.na(region), region != "california"))) + aes(long, lat, group = group) +
@@ -158,10 +162,8 @@ Parking_Citations %>%
   scale_fill_manual(values = c("Black", "Blue", "#8B4513", "Gray", "Red", "White"))
 ```
 
-***
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
-
 #Average fine by Make of car 
 Parking_Citations %>% 
   filter(!is.na(Fine.amount)) %>%
@@ -250,7 +252,7 @@ popViewport(1)
 ```
 
 
-### Where do parking violations occur?
+## Where do parking violations occur?
 
 ```{r lat/lon, eval=FALSE, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
 #will not run with eval = FALSE
@@ -445,7 +447,7 @@ demMap
   Using this data, we can see that every one of our ethnicities does go around the central downtown LA area. We also see certain trends with our severe crime data. People of Black descent appear to be closer in proximity to the severe crime hotspot and people of Chinese descent appear to be further from the more severe crimes in the area. When we compare to parking citations it would suggest not only that crime has no effect on parking citations, but also that demographics does not necessarily contribute to frequency of citations and certain areas may not more likely to receive citations because of their ethnic makeup. 
 
 
-### When do violations occur?  
+## When do violations occur?  
 
 
 ###### Holiday Parking  
@@ -575,7 +577,7 @@ Parking_Citations%>%mutate(day_of_month = format(as.Date(Issue.Date, format = "%
 As seen in the plot, not only did we find no evidence of citation frequency ramping up toward the end of the month, we found that citation frequency tends to remain relatively stable. The extremely low frequency on days that are the 31^st^ of the month is caused by only 7 out of 12 months having 31 days.
 
 
-### Conclusions
+## Conclusions
 
 The Parking Citaitons Analysis evolved into more than just a matter of counting. Our first graphs uncovered startling statistics about prices and fines. When looking at the most cited color and car types, our analysis revealed that special vehicles like ambulances, golf carts, forklifts, and tankers also were subject to Los Angeles parking enforcement. Excited by the potential of what this dataset offered, we used complementary datasets to dive deeper into the socio-economic, cultural, and meteorological effects on Los Angeles parking Citations. More than just viewing the dataset at face value, we saw how parking ciations explained larger picture characteristics about the city of Los Angeles, but especially in regards to traffic and parking citaitons. At every turn, we discovered new, unique insights, which, even if they had less cohesiveness together than we had hoped, opened up even greater questions
 
@@ -588,8 +590,7 @@ Newton, Damien, et al. “Density, Car Ownership, and What It Means for the Futu
 “Parking Citations: Los Angeles - Open Data Portal.” Data.lacity.org, 13 Feb. 2020, data.lacity.org/A-Well-Run-City/Parking-Citations/wjz9-h9np.3. 
 
 3.
-“Parking Citations: Los Angeles - Open Data Portal.” Data.lacity.org, 13 Feb. 2020, data.lacity.org/A-Well-Run-City/Parking-Citations/wjz9-h9np.
-
+“Colored Curb Zones.” LADOT, ladot.lacity.org/residents/colored-curb-zones.
 
 
 
