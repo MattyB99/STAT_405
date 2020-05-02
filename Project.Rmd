@@ -10,7 +10,7 @@ fontsize: 10pt
 geometry: margin=1in
 ---
 
-```{r setup, include=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
 #library(usethis)
 library(ggmap)
 library(rgdal)
