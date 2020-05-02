@@ -202,7 +202,8 @@ b <- Parking_Citations %>%
   ggplot() + aes(x = Body.Style, y = avg, fill = ..x..) + geom_histogram(stat = "identity") +
   theme(panel.background = element_rect(fill = "gray75"),
         legend.position = "none",
-        axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8)) +
+        axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8),
+        axis.title.x = element_blank()) +
   labs(x = "Professional Vehicles") +
   scale_fill_gradient(low = "Light Sky Blue", high = "Navy Blue") +
   scale_x_discrete(labels = c("Ambulance", "Bus", "Forklift", "Limo", "Tanker", "Trailer"))
@@ -530,7 +531,7 @@ ggplot(data = Parking_Citations)  + labs(title = "Frequency of Parking Tickets T
   geom_histogram(aes(x = Issue.time,y = ..density.., fill = ..x..),  binwidth = 100, boundary = 0, closed = "left") + 
   scale_fill_gradient(low = "Gold", high = "Navy Blue")+ theme(axis.text.x = element_text(hjust = 1, angle = 45), panel.background = element_rect(fill = "gray75")) +
   scale_x_continuous(breaks = seq(0, 2300, 100), labels = paste(seq(0, 23, 1), "00", sep = ":")) +
-  geom_density(aes(x = Issue.time), size = 1.5) +  guides(fill = FALSE)
+  geom_density(aes(x = Issue.time), size = 1) +  guides(fill = FALSE)
 ```
 The greatest frequency of citations were issued between 8:00am and 2:00pm, with peaks occurring in the first half of each hour. Unsurprisingly, very few citations were issued in the early hours of the morning, wth the lowest frequency occurring between 5:00-6:00am.
 
