@@ -8,7 +8,7 @@ fontsize: 10pt
 geometry: margin=1in
 ---
 
-```{r setup, include=FALSE, message=FALSE, warning=FALSE}
+```{r setup, include=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
 #library(usethis)
 library(ggmap)
 library(rgdal)
@@ -34,7 +34,7 @@ Parking_Citations <- readRDS(file = "Parking_Citations.rds")
 ### Introduction  
    Alex, Anushi, Matt and Griffin all come from different backrounds and majors, so in disucssions for which dataset we wanted to analyze, we explored a wide range of topics from public health to the New York City subway We eventually decided to take on data from another large metropolis, but this time in sunny Los Angeles. In Los Angeles, the beautiful beaches, countless celebrities, and hollywood homes are magical for visitors. However, LA traffic is often very bad and parking in tourist areas can be a nightmare. As the second largest city in the United States, there are over 6.4 million vehicles in the Los Angeles urbanized area^1^. Our dataset, Parking_Citations, contains all the details of nearly 10 million parking violations in Los Angeles from 2010 to the present. That means we have access to the records that account for fines totalling close to $600 million. With so much money at stake and the huge volume of data, the city of Los Angeles keeps track of these records electronically. We intend to take this massive amount of data and transform it so that the intricacies of parking violations can be easily understood.  
 
-```{r 3D Heatmap, echo=FALSE, message=FALSE, warning=FALSE}
+```{r 3D Heatmap, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
 if(knitr::is_html_output()){
 set_token(Sys.getenv("MAPBOX"))
 mapdeck(pitch = 45, zoom = 100) %>%
@@ -43,7 +43,7 @@ mapdeck(pitch = 45, zoom = 100) %>%
            colour_range = viridisLite::plasma(6))} 
 ```
 
-```{r 3D_Map, echo=FALSE, out.width="0.69\\linewidth", out.height="0.69\\linewidth", fig.align="center", message=FALSE, warning=FALSE}
+```{r 3D_Map, echo=FALSE, out.width="0.85\\linewidth", out.height="0.85\\linewidth", fig.align="center", message=FALSE, warning=FALSE, cache=TRUE}
 if(!knitr::is_html_output()) {knitr::include_graphics("3D_Map.png") }
 ```
 
@@ -55,7 +55,7 @@ if(!knitr::is_html_output()) {knitr::include_graphics("3D_Map.png") }
 ***   
 #### Overview graphs
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
 #### number of fines per year
 
 Parking_Citations%>% 
@@ -83,7 +83,7 @@ popViewport(2)
 ```
 
 When we began our analysis, we had to get some idea of what we were dealing with. With no instructions, We first boiled down the data into a more understandble form. The data gave us a good amount of information, and it also gave us a good starting point. The data showed a skewed distrubution over 11 year span. From 2010 to 2014 there were less than 40 parking citations recorded. In 2014 that number increased to 34,000. After that, we saw a drastic 44 percent change into 2015, when 1,541,535 parking citations were recorded. The count peaked at 2,154,321 citations in 2017. This peak accentuated both the steep rise leading up to 2017 and also the suprisingly steep decline afterwards. While this graph gave us a good handle on the numbers, there were questions unanswered about the data collection.The  drastic increase from 2014-2015 may be explained by an attempt by the City of Los Angeles to digitize their citations. But that explanation is contradicted by the equally sharp decline after 2017. This left the question of how many citations did they actually collect? The graph didn't tell us exactly, but it gives us a range of values that captures the true value or something close. Even without the actual answer, this graph highlighted the magnitude of the citaitons in LA.
-```{r dollars per year, echo=FALSE, message=FALSE, warning=FALSE}
+```{r dollars per year, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
 data.frame(Year=c(seq(from=2010, to=2020, by=1), "Total"),
          "Dollars_Collected" =c(730, 630, 2276, 3062, 2371400, 107172874, 130124585,151608139,124738695,75291586,2275, sum(c(730, 630, 2276, 3062, 2371400, 107172874, 130124585,151608139,124738695,75291586,2275))))%>%knitr::kable()
 
@@ -121,7 +121,7 @@ Parking_Citations %>%
   Parking citations by location indicated where the most violations have occured. These violations happen in major hotspots of the city which have heavy tourist footraffick and very little space. The lack of parking forces people to park in residential areas, where there are high chances of fines. 1301 ELectric Ave is a street where people park to visit Long Beach, California's famous Seal Beach. Irving Court is very close to a the Venice Beach boardwalk and the Abbot Keny shopping district. Hawthorne Avenue is the spot just south of the bustling Hollyword Blvd. Among these hotspots is also The Griffith Observatory. These Los Angeles must sees attract more cars and tourists than an area can hold and so are, unsuprisingly, the locations with the most cited violations.
 
 
-```{r cleanup, eval=FALSE, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE}
+```{r cleanup, eval=FALSE, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
 #Average fine amount by year
 Parking_Citations %>%
   filter(!is.na(Issue.Date), !is.na(Fine.amount)) %>%
@@ -135,14 +135,14 @@ Parking_Citations %>%
 
 #### Who receives parking citations?
 
-  
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
 ggplot(map_data("state")%>%left_join(Parking_Citations%>%group_by(RP.State.Plate)%>%summarise(count = n())%>%left_join(read.csv('statename.csv'))%>%filter(!is.na(region), region != "california"))) + aes(long, lat, group = group) +
-  geom_polygon(aes(fill = count), color = "white") + scale_fill_viridis_c(option = "C")
+  geom_polygon(aes(fill = count), color = "white") + scale_fill_viridis_c(option = "C") + theme_void() + theme(legend.position = c(.1, .17)) +
+  labs(fill = "Number of Citations", title = "Number of Citations for Vehicles with Out of State Registration")
 ```
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
 #Average fine amount by car Color
 Parking_Citations %>% 
   filter(!is.na(Fine.amount), !is.na(Color)) %>%
@@ -156,7 +156,7 @@ Parking_Citations %>%
   scale_fill_manual(values = c("Black", "Blue", "#8B4513", "Gray", "Red", "White"))
 ```
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
 #Average fine by Make of car 
 Parking_Citations %>% 
   filter(!is.na(Fine.amount)) %>%
@@ -173,7 +173,7 @@ Parking_Citations %>%
 
 ```
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
 #Violation Description by Body Style Description
 Parking_Citations %>%
   filter(Body.Style.Description != "", !is.na(Violation.Description)) %>%
@@ -191,7 +191,7 @@ Parking_Citations %>%
 
 ```
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
 #Average fine by Body.Style
 
 grid.newpage()
@@ -247,7 +247,7 @@ popViewport(1)
 
 #### Where do parking violations occur?
 
-```{r lat/lon, eval=FALSE, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE}
+```{r lat/lon, eval=FALSE, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
 #will not run with eval = FALSE
 locs <- Parking_Citations%>%filter(!is.na(Latitude), !is.na(Fine.amount), Latitude > 99999)%>%select(Latitude, Longitude, Ticket.number)
 coordinates(locs) <- ~ Latitude + Longitude
@@ -258,7 +258,7 @@ df <- Parking_Citations%>%filter(!is.na(Latitude), !is.na(Fine.amount), Latitude
 saveRDS(df, file = "Parking_Citations.rds")
 ```
 
-```{r eval = FALSE, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE}
+```{r eval = FALSE, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
 
 ## Creates locations and a heatmap of data on the map of LA
 locs <- Parking_Citations %>%
@@ -271,7 +271,7 @@ locs <- spTransform(locs,CRS("+init=epsg:4326")) %>%
 locs2 <- locs[seq(4000000:4100000),]
 ```
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
 ## Creates map of LA with citation data heatmap
 map <- get_map(getbb("Los Angeles"), zoom = 10, map_type = "roadmap")
 overallMap <- ggmap(map) +
@@ -281,7 +281,7 @@ overallMap <- ggmap(map) +
   theme(axis.text.x = element_text(hjust  = 1, angle = 45)) + labs(title = "Parking Citations")
 ```
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
 ## creates sql weather comparison graph
 library(RSQLite)
 dcon <- dbConnect(SQLite(), dbname = "data.sqlite")
@@ -307,7 +307,7 @@ weatherMap <- ggmap(map) +
   theme(axis.text.x = element_text(hjust  = 1, angle = 45)) + labs(title = "Weather")
 ```
 
-```{r, warning=FALSE, echo=FALSE, message=FALSE}
+```{r, warning=FALSE, echo=FALSE, message=FALSE, cache=TRUE}
 library(RSQLite)
 
 ## all crime
@@ -404,7 +404,7 @@ crimeMap <- ggmap(map) +
 
 ##### Does weather or crime affect the parking convictions overall?
   In our investigation of how parking citations are distributed across the city of LA, we wondered how crime data and potentially weather data would fit in with our parking citations data. We used 2 SQL databases of both LA weather and LA crime to compare with our initial data. By using a heatmap on the city of LA with out data we can see different concentrations of crime, weather, etc., and in conjunction with our initial dataset we can see if there are any correlations between crime, weather, and our parking citations. 
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
 
 grid.newpage()
 ly <- grid.layout(1, 3)
@@ -419,7 +419,7 @@ The graphs show the density of parking citations in LA, the density of parking c
 
 ###### Crime and its effect
 The crime map does account for overall crime regardless of severity, so we thought that it would be a good idea to rate the crime by severity. In our data for crime, we are supplied with crime codes that indicate the type of crime commited. Because the crime codes are known and this is a database of reported crimes for LA we can assume that this would give a fairly accurate map of crime activity in LA. We also made the assumption that if there is more crime in an area it is more likely that there is increased police activity in that area, and therefore more citations can be given. Crime codes are on a numeric scale where the lower the crime code number, the more severe the offense, so we thought that it would be an interesting idea to 
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
 
 grid.newpage()
 ly <- grid.layout(1, 2)
@@ -428,12 +428,13 @@ print(crime500Map, vp = viewport(layout.pos.row = 1, layout.pos.col = 1))
 print(badCrimeMap, vp = viewport(layout.pos.row = 1, layout.pos.col = 2))
 ```
 
-
   As shown in the graphs moderate crime with a moderate crime code tends to be way more spread out over the city when compared to the severe crime. Looking at the legends also gives credence to this as the density is way less than that of the severe crime with severe crime being extremely concentrated and much more dense than the moderate crime. When we compare to our parking citation data, we can see that there is an overlap in the central downtown area, but besides that there is still a lot of crime happening outside of the area regardless of severity suggesting that crime does not necessarily correlate to parking citations.
 
 ##### Demographic areas
   Using our crime database we can find the demographics by crime and see in which areas crime happens based on demographic. By plotting these maps we can find demographic data by region which we can use to see whether or not there are demographic differences in parking citations frequency.
-```{r, fig.height = 6, fig.width = 7, align = 'center', echo=FALSE, warning=FALSE, message=FALSE}
+  
+  
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
 demMap
 ```
   Using this data, we can see that every one of our ethnicities does go around the central downtown LA area. We also see certain trends with our severe crime data. People of Black descent appear to be closer in proximity to the severe crime hotspot and people of Chinese descent appear to be further from the more severe crimes in the area. When we compare to parking citations it would suggest not only that crime has no effect on parking citations, but also that demographics does not necessarily contribute to frequency of citations and certain areas may not more likely to receive citations because of their ethnic makeup. 
@@ -448,7 +449,7 @@ demMap
 
 ###### Holiday Parking  
   Major holidays account for some of the busiest travel days in the year, so we decided to investigate how the total amount of money collected on each day was distributed. We selected New Year's Eve, Super Bowl Sunday, Valentine's Day, St. Patrick's Day, July 4^th^, Halloween, Thanksgiving, and Christmas and summed up the fines issued for each day. The totals were then plotted proportionally for each holiday seen below.  
-```{r holidays, echo=FALSE, fig.align="center", message=FALSE, warning=FALSE, out.width="1.5\\linewidth", out.height="1.5\\linewidth"}
+```{r holidays, echo=FALSE, fig.align="center", message=FALSE, warning=FALSE, out.width="1.15\\linewidth", out.height="1.15\\linewidth", cache=TRUE}
 holidays <- c("12/25/2014", "12/25/2015", "12/25/2016", "12/25/2017", "12/25/2018", "12/25/2019", 
               "12/31/2014", "12/31/2015", "12/31/2016", "12/31/2017", "12/31/2018", "12/31/2019", 
               "11/27/2014", "11/26/2015", "11/24/2016", "11/23/2017", "11/22/2018", "11/28/2019",
@@ -534,7 +535,7 @@ Our analysis found a striking difference between the fine amounts for holidays. 
 ###### Days of the Week  
   While analyzing which day of the week elicited the most citations, we also decided to group by the season of the year to see if that would affect the total volume of citations issued.  
   
-```{r that time of the week, echo=FALSE, message=FALSE, warning=FALSE}
+```{r that time of the week, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
 
 Parking_Citations%>%mutate(day_of_month = format(as.Date(Issue.Date, format = "%m/%d/%Y"), format="%u"))%>%
   mutate(month = as.integer(format(as.Date(Issue.Date, format = "%m/%d/%Y"), format="%m")))%>%
@@ -552,7 +553,7 @@ Across every season, Tuesday had the greatest volume of citations issued, while 
 ###### Time of Day
   We also explored how citations were issued over the course of the day.   
   
-```{r that time of the day, echo=FALSE, message=FALSE, warning=FALSE}
+```{r that time of the day, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
 ggplot(data = Parking_Citations)  + labs(title = "Frequency of Parking Tickets Throughout the Day",
                             x = "Time of Day (Military Time)", y = "Frequency of Tickets") +
   geom_histogram(aes(x = Issue.time,y = ..density.., fill = ..x..),  binwidth = 100, boundary = 0, closed = "left") + 
@@ -564,7 +565,7 @@ The greatest frequency of citations were issued between 8:00am and 2:00pm, with 
 
 ###### Quotas
 It is a common misconception that ticket frequencies increase at the end of each month as many people believe that officers have monthly quotas to fill. We explored whether an increase in ticket frequency was observed at the end of the month by plotting the total count of tickets for each day of the month for all months.
-```{r that time of the month, echo=FALSE, message=FALSE, warning=FALSE}
+```{r that time of the month, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
 Parking_Citations%>%mutate(day_of_month = format(as.Date(Issue.Date, format = "%m/%d/%Y"), format="%d"))%>%
   ggplot() +aes(x = day_of_month, fill = day_of_month)+ geom_bar() + labs(x = "Day of the Month", y = "Total Number of Citations", title = "Citations over the Month") + scale_fill_manual(values = c(rep("dark green", 27), rep("red", 4))) + guides(fill = FALSE)
 
