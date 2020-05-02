@@ -135,12 +135,15 @@ Parking_Citations %>%
 
 #### Who receives parking citations?
 
+  Parking citations and violations seem to be universal, affecting every vehicle on the road all the same. But with access to such large amounts of data, we wanted to know whether all vehicles had the same chance of recieving a parking violation. 
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
 ggplot(map_data("state")%>%left_join(Parking_Citations%>%group_by(RP.State.Plate)%>%summarise(count = n())%>%left_join(read.csv('statename.csv'))%>%filter(!is.na(region), region != "california"))) + aes(long, lat, group = group) +
   geom_polygon(aes(fill = count), color = "white") + scale_fill_viridis_c(option = "C") + theme_void() + theme(legend.position = c(.1, .17)) +
   labs(fill = "Number of Citations", title = "Number of Citations for Vehicles with Out of State Registration")
 ```
+
+  Although only around 1.5 million out of the 8.5 million violations we looked at were for out-of-state vehicles, we wanted to know what the distribution of these vehicles was. The fact that Arizona had the highest count seems logical given its close proximity to LA. This same reasoning could also explain the high concentration of vehicles from both Nevada and Texas. Although Oregon and Washington border the opposite side of California, the overall increased travel between the west coast states could account for these findings. On the other hand, the obvious outlier Florida was much higher than its neighboring states but this could either be coincidental or due to the higher volume of travel from this state. 
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
 #Average fine amount by car Color
@@ -155,6 +158,8 @@ Parking_Citations %>%
   scale_x_discrete(labels = c("Black", "Blue", "Brown", "Gray", "Red", "White")) +
   scale_fill_manual(values = c("Black", "Blue", "#8B4513", "Gray", "Red", "White"))
 ```
+
+  We have heard before that cars with bright colors, such as red, are more likely to get pulled over due to their high visibility on the road. In order to investigate whether there was any such color-bias when it came to parking violations we looked at the total number of violations by car color. In order to perform this analysis we manually picked 6 of the most common car colors. Since the distribution of count seemed to vary with the typical distribution of car colors we are used to seeing on the road, with colors like black and gray having the highest counts, we concluded that there was no significant impact on the likelihood of a parking violation based on the color of a car. 
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
 #Average fine by Make of car 
@@ -173,23 +178,7 @@ Parking_Citations %>%
 
 ```
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
-#Violation Description by Body Style Description
-Parking_Citations %>%
-  filter(Body.Style.Description != "", !is.na(Violation.Description)) %>%
-  subset(Violation.Description == "NO PARK/STREET CLEAN" | 
-           Violation.Description == "METER EXP." | 
-           Violation.Description == "RED ZONE" | 
-           Violation.Description == "PREFERENTIAL PARKING" | 
-           Violation.Description =="DISPLAY OF TABLS" | 
-           Violation.Description == "NO PARKING") %>% 
-  ggplot() + 
-  aes(x = Body.Style.Description, fill = Violation.Description) +
-  geom_bar(position = "fill") + 
-  labs(title = "Percent of Different Violations by Vehicle Type", x = "Vehicle Type", y = "Proportion of Violation Type") +
-  coord_flip()
-
-```
+  Although so far it seemed like there was a surprising amount of equality in the chances of various cars recieving parking violations, we wanted to look deeper into the actual manufacturers of the cars. We wondered if perhaps more expensive cars might be getting higher fines. So, grouped the cars by manufacturer and looked at the average fine amount of all the cars in groups greater than 50,000 violations. Given the fact that we represented over 8 million rows of data, even small fluctuations could be pretty significant. However when we looked at the highest averages of fine amounts, we saw that the Other category was highest followed by GMC, Kia and Nissan, none of which were considered very expensive. The lowest average was also BMW, which was known to be a more expensive manufacturer. The peak of the Other category could mean something given that this category might contain smaller less standard cars but this would also make sense if we assumed that the less standard cars were also more expensive. 
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
 #Average fine by Body.Style
@@ -244,6 +233,27 @@ print(c, vp = viewport(layout.pos.row = 2, layout.pos.col = 1))
 popViewport(1)
 ```
 
+  Although a large majority of the vehicles was relatively standard personal vehicles, the dataset also contained non-standard personal vehicles, such as Golf Carts or Motorcycles and also more professional vehicles, such as ambulances or limos that were typically not personal vehicles and used for a more professional purpose. In order to analyze the fine amount at from another angle, we manually categorized 22 of the vehicle types into these three categories and lookes at the trend. While convertibles were a clear outlier in the standard personal vehicles category this could likely be a coincidence due to the low overall count of these vehicles. Furthermore, mopeds had one of the lowest averages which could be explained by the fact that they may incur less significant violations due to the nature of the vehicle.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
+#Violation Description by Body Style Description
+Parking_Citations %>%
+  filter(Body.Style.Description != "", !is.na(Violation.Description)) %>%
+  subset(Violation.Description == "NO PARK/STREET CLEAN" | 
+           Violation.Description == "METER EXP." | 
+           Violation.Description == "RED ZONE" | 
+           Violation.Description == "PREFERENTIAL PARKING" | 
+           Violation.Description =="DISPLAY OF TABLS" | 
+           Violation.Description == "NO PARKING") %>% 
+  ggplot() + 
+  aes(x = Body.Style.Description, fill = Violation.Description) +
+  geom_bar(position = "fill") + 
+  labs(title = "Percent of Different Violations by Vehicle Type", x = "Vehicle Type", y = "Proportion of Violation Type") +
+  coord_flip()
+
+```
+
+  Finally we wanted to look at the various types of vehicles on a higher level. We wondered if perhaps the type of vehicle would impact the frequency of different types of violations. In order to make this analysis more feasible, we took subsetted the rows with the 6 most frequent types of violations and looked at these. 
 
 #### Where do parking violations occur?
 
