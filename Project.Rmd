@@ -581,12 +581,6 @@ As seen in the plot, not only did we find no evidence of citation frequency ramp
 
 The Parking Citaitons Analysis evolved into more than just a matter of counting. Our first graphs uncovered startling statistics about prices and fines. When looking at the most cited color and car types, our analysis revealed that special vehicles like ambulances, golf carts, forklifts, and tankers also were subject to Los Angeles parking enforcement. Excited by the potential of what this dataset offered, we used complementary datasets to dive deeper into the socio-economic, cultural, and meteorological effects on Los Angeles parking Citations. More than just viewing the dataset at face value, we saw how parking ciations explained larger picture characteristics about the city of Los Angeles, but especially in regards to traffic and parking citaitons. At every turn, we discovered new, unique insights of our data. The potential to discover new nuances and avenues of exploration within this data will motivate us to dig deeper into 
 
-<<<<<<< HEAD
-=======
-
-  The analysis also shows 
-
->>>>>>> 2e893addd5bfff75efdc1ea96ff6db32ed1e17a8
 1.
 Newton, Damien, et al. “Density, Car Ownership, and What It Means for the Future of Los Angeles.” Streetsblog Los Angeles, 13 Dec. 2010, la.streetsblog.org/2010/12/13/density-car-ownership-and-what-it-means-for-the-future-of-los-angeles/.
 
