@@ -2,13 +2,10 @@
 title: "Your Project Title"
 author: "Matthew Barclay, Griffin Coccari, Alex Gallegos, Anushi Singhal"
 output: pdf_document
-<<<<<<< HEAD
-=======
 toc: true
 toc_depth: 3
 number_sections: true
 theme: united
->>>>>>> 3bb89e509bab1f45a34623f078790401b9efb0bf
 fontsize: 10pt
 geometry: margin=1in
 ---
