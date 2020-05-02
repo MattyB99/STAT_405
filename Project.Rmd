@@ -256,7 +256,7 @@ overallMap <- ggmap(map) +
   stat_density2d(data = Parking_Citations[4000000:4100000,], aes(x = real_lng, y = real_lat, fill = ..level.., alpha = ..level..), geom = "polygon", size = 0.01, bins = 16) +
   scale_fill_gradient(low = "red", high = "yellow") +
   scale_alpha(range = c(0, 1), guide = FALSE) + 
-  theme(axis.text.x = element_text(hjust  = 1, angle = 45))
+  theme(axis.text.x = element_text(hjust  = 1, angle = 45)) + labs(title = "Parking Citations")
 ```
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
@@ -282,10 +282,10 @@ weatherMap <- ggmap(map) +
   stat_density2d(data = weather, aes(x = real_lng, y = real_lat, fill = ..level.., alpha = ..level..), geom = "polygon", size = 0.01, bins = 16) +
   scale_fill_gradient(low = "red", high = "yellow") +
   scale_alpha(range = c(0, 1), guide = FALSE) + 
-  theme(axis.text.x = element_text(hjust  = 1, angle = 45))
+  theme(axis.text.x = element_text(hjust  = 1, angle = 45)) + labs(title = "Weather")
 ```
 
-```{r, warning=FALSE, echo=FALSE, message=FALSE}
+```{r, warning=FALSE, echo=FALSE, message=FALSE, eval=FALSE}
 library(RSQLite)
 
 ## all crime
@@ -348,7 +348,7 @@ demMap <- ggmap(map) +
   facet_wrap(~ field14) +
   scale_fill_gradient(low = "red", high = "yellow") +
   scale_alpha(range = c(0, 1), guide = FALSE) + 
-  theme(axis.text.x = element_text(hjust  = 1, angle = 45))
+  theme(axis.text.x = element_text(hjust  = 1, angle = 45)) + labs(title = "Demographic Data")
 
 ## 300 to 550 crime
 map <- get_map(getbb("Los Angeles"), zoom = 10, map_type = "roadmap")
@@ -357,7 +357,7 @@ crime500Map <- ggmap(map) +
                  geom = "polygon", size = 0.01, bins = 16) +
   scale_fill_gradient(low = "red", high = "yellow") +
   scale_alpha(range = c(0, 1), guide = FALSE) + 
-  theme(axis.text.x = element_text(hjust  = 1, angle = 45))
+  theme(axis.text.x = element_text(hjust  = 1, angle = 45)) + labs(title = "Moderate Crime")
 
 ## badCrime map
 map <- get_map(getbb("Los Angeles"), zoom = 10, map_type = "roadmap")
@@ -366,7 +366,7 @@ badCrimeMap <- ggmap(map) +
                  geom = "polygon", size = 0.01, bins = 16) +
   scale_fill_gradient(low = "red", high = "yellow") +
   scale_alpha(range = c(0, 1), guide = FALSE) + 
-  theme(axis.text.x = element_text(hjust  = 1, angle = 45))
+  theme(axis.text.x = element_text(hjust  = 1, angle = 45)) + labs(title = "Bad Crime")
 
 
 
@@ -377,9 +377,11 @@ crimeMap <- ggmap(map) +
                  geom = "polygon", size = 0.01, bins = 16) +
   scale_fill_gradient(low = "red", high = "yellow") +
   scale_alpha(range = c(0, 1), guide = FALSE) + 
-  theme(axis.text.x = element_text(hjust  = 1, angle = 45))
+  theme(axis.text.x = element_text(hjust  = 1, angle = 45)) + labs(title = "Overall Crime")
 ```
 
+##### Does weather or crime affect the parking convictions overall?
+  In our investigation of how parking citations are distributed across the city of LA, we wondered how crime data and potentially weather data would fit in with our parking citations data. We used 2 SQL databases of both LA weather and LA crime to compare with our initial data. By using a heatmap on the city of LA with out data we can see different concentrations of crime, weather, etc., and in conjunction with our initial dataset we can see if there are any correlations between crime, weather, and our parking citations. 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 
 grid.newpage()
@@ -389,12 +391,22 @@ print(overallMap, vp = viewport(layout.pos.row = 1, layout.pos.col = 1))
 print(weatherMap, vp = viewport(layout.pos.row = 1, layout.pos.col = 2))
 print(crimeMap, vp = viewport(layout.pos.row = 1, layout.pos.col = 3))
 
+```
+
+The graphs show the density of parking citations in LA, the density of parking citations when weather was above half an inch of rain, and all crime in LA. From these heatmaps we can see that though there is a greater spread with crime over the downtown LA area, there is a big concentration around the central downtown area. It should be noted that the concentration of crime is much lower as shown by the legend on the graph, but the heatmap does still show that there is still a concentration centrered around downtown LA. 
+
+###### Crime and its effect
+The crime map does account for overall crime regardless of severity, so we thought that it would be a good idea to rate the crime by severity. In our data for crime, we are supplied with crime codes that indicate the type of crime commited. Because the crime codes are known and this is a database of reported crimes for LA we can assume that this would give a fairly accurate map of crime activity in LA. We also made the assumption that if there is more crime in an area it is more likely that there is increased police activity in that area, and therefore more citations can be given. Crime codes are on a numeric scale where the lower the crime code number, the more severe the offense, so we thought that it would be an interesting idea to 
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
 grid.newpage()
 ly <- grid.layout(1, 2)
 pushViewport(viewport(layout = ly))
 print(crime500Map, vp = viewport(layout.pos.row = 1, layout.pos.col = 1))
 print(badCrimeMap, vp = viewport(layout.pos.row = 1, layout.pos.col = 2))
+```
 
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 demMap
 ```
 
