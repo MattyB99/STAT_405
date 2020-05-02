@@ -113,12 +113,6 @@ Parking_Citations %>%
   head(10)%>% knitr::kable()
 
 
-##Parking_Citations%>%select(RP.State.Plate)%>%
-##filter(!is.na(RP.State.Plate))%>%
-##filter(RP.State.Plate!="CA")%>%
-##group_by(RP.State.Plate)%>%
-##  summarise(count=n())
-
 ```
     
   Los Angeles is not just a city with horrible traffic, it's also a city where it is terribly hard to park, especially in tourist areas, shopping districts, or other special zones. Over the past decade, The City of Los Angeles collected $591,316,252 digitally. The amount of dollars collected mimicks the movement in the previous graph of citations byt year Our Top_Violations table explains that the top three violations are parking in a street clean area, parking with an experied meter, and parking in a red zone. Street Cleaning happens every day in Los Angeles, albeit on different sides of the roads depending on the day of the week. Because the side of the street that is cleaned changes on a daily bases, many people are caught parking on the wrong side of the road and are penalized. People who are in a hurry, who do know the law, sometimes ignore it or assume that the street cleaner has passed or won't come and are also penalized frequently. Parking in a red zone is The City of Los Ageles's third most frequently cited violation. A red curb, or red zone, indicates no parking, standing or stopping for public safety reasons^3^.  Parking violations vary in their severity. Violating a red zone parking law is a public safety issue, so the fine is more expensive than that of a meter experation ticket, which is stil very expensive! At the very least, do not get caught parking in a disabled vehicle designated spot without reason. That fine will cost you 1100 dollars. 
