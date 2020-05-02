@@ -444,6 +444,8 @@ print(badCrimeMap, vp = viewport(layout.pos.row = 1, layout.pos.col = 2))
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE, fig.height=5, fig.width=7, fig.align='center'}
 demMap
 ```
+  
+(Where B = Black descent, C = Chinese descent, H = Hispanic/Latinx descent, I = Amer-Indian descent, P = Pacific Islander descent, and W = White descent)
   Using this data, we can see that every one of our ethnicities does go around the central downtown LA area. We also see certain trends with our severe crime data. People of Black descent appear to be closer in proximity to the severe crime hotspot and people of Chinese descent appear to be further from the more severe crimes in the area. When we compare to parking citations it would suggest not only that crime has no effect on parking citations, but also that demographics does not necessarily contribute to frequency of citations and certain areas may not more likely to receive citations because of their ethnic makeup. 
 
 
