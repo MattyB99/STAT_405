@@ -1,5 +1,5 @@
 ---
-title: "Your Project Title"
+title: "An Analysis of Parking Citations in Los Angeles"
 author: "Matthew Barclay, Griffin Coccari, Alex Gallegos, Anushi Singhal"
 geometry: margin=1in
 output:
@@ -56,14 +56,12 @@ mapdeck(pitch = 45, zoom = 100) %>%
 if(!knitr::is_html_output()) {knitr::include_graphics("3D_Map.png") }
 ```
 
-  
-##### Big Data  
+
   The raw data was accessed directly from the City of Los Angeles Department of Transportation (LADOT) through the city's Open Data website^2^. The original data set contained 9.97 million rows, each containing details on one parking violation. We identified the fine amount and location data as the most important variables and therefore removed all rows containing empty or NA values in those two columns. This narrowed the amount of rows to about 8.5 million. LADOT uses US Feet coordinates according to the NAD_1983_StatePlane_California projection, which is not easily comparable to standard latitude and longitude values, so our next step was to use **sp** package for R to transform our location data. Our final cleaned data set contained data on 8,502,692 tickets, including information of the time, date, location, vehicle information, parking offense, and more. Although well over the 1 milion row minimum requirement, this large amount of data will allow us to explore the trends in parking violations in LA over a relatively large time frame.  
    
    
-***    
-  
-#### Overview graphs
+
+
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
 #### number of fines per year
@@ -197,9 +195,7 @@ Parking_Citations %>%
   scale_x_discrete(labels = c("Acura", "Audi", "BMW", "Cadillac", "Chevy", "Chrysler", "Dodge", "Ford", "GMC", "Honda", "Hyundai", "Infinity", "Jeep", "Kia", "Lexus", "Land Rover", "Mazda", "Mercedez", "Mitsubishi", "Mini Cooper", "Nissan", "Other", "Subaru", "Toyota", "Volkswagon", "Volvo"))
 
 ```
-
-  Although so far it seemed like there was a surprising amount of equality in the chances of various cars recieving parking violations, we wanted to look deeper into the actual manufacturers of the cars. We wondered if perhaps more expensive cars might be getting higher fines. So, grouped the cars by manufacturer and looked at the average fine amount of all the cars in groups greater than 50,000 violations. Given the fact that we represented over 8 million rows of data, even small fluctuations could be pretty significant. However when we looked at the highest averages of fine amounts, we saw that the Other category was highest followed by GMC, Kia and Nissan, none of which were considered very expensive. The lowest average was also BMW, which was known to be a more expensive manufacturer. The peak of the Other category could mean something given that this category might contain smaller less standard cars but this would also make sense if we assumed that the less standard cars were also more expensive. 
-
+  
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
 #Average fine by Body.Style
 
@@ -253,6 +249,7 @@ print(c, vp = viewport(layout.pos.row = 2, layout.pos.col = 1))
 popViewport(1)
 ```
 
+  Although so far it seemed like there was a surprising amount of equality in the chances of various cars recieving parking violations, we wanted to look deeper into the actual manufacturers of the cars. We wondered if perhaps more expensive cars might be getting higher fines. So, grouped the cars by manufacturer and looked at the average fine amount of all the cars in groups greater than 50,000 violations. Given the fact that we represented over 8 million rows of data, even small fluctuations could be pretty significant. However when we looked at the highest averages of fine amounts, we saw that the Other category was highest followed by GMC, Kia and Nissan, none of which were considered very expensive. The lowest average was also BMW, which was known to be a more expensive manufacturer. The peak of the Other category could mean something given that this category might contain smaller less standard cars but this would also make sense if we assumed that the less standard cars were also more expensive.  
   Although a large majority of the vehicles was relatively standard personal vehicles, the dataset also contained non-standard personal vehicles, such as Golf Carts or Motorcycles and also more professional vehicles, such as ambulances or limos that were typically not personal vehicles and used for a more professional purpose. In order to analyze the fine amount at from another angle, we manually categorized 22 of the vehicle types into these three categories and lookes at the trend. While convertibles were a clear outlier in the standard personal vehicles category this could likely be a coincidence due to the low overall count of these vehicles. Furthermore, mopeds had one of the lowest averages which could be explained by the fact that they may incur less significant violations due to the nature of the vehicle.
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
@@ -274,7 +271,9 @@ Parking_Citations %>%
 ```
 
   Finally we wanted to look at the various types of vehicles on a higher level. We wondered if perhaps the type of vehicle would impact the frequency of different types of violations. In order to make this analysis more feasible, we took subsetted the rows with the 6 most frequent types of violations and looked at these. 
-
+  
+\newpage
+  
 ## Where do parking violations occur?
 
 ```{r lat/lon, eval=FALSE, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
@@ -449,7 +448,7 @@ The graphs show the density of parking citations in LA, the density of parking c
 
 ###### Crime and its effect
 The crime map does account for overall crime regardless of severity, so we thought that it would be a good idea to rate the crime by severity. In our data for crime, we are supplied with crime codes that indicate the type of crime commited. Because the crime codes are known and this is a database of reported crimes for LA we can assume that this would give a fairly accurate map of crime activity in LA. We also made the assumption that if there is more crime in an area it is more likely that there is increased police activity in that area, and therefore more citations can be given. Crime codes are on a numeric scale where the lower the crime code number, the more severe the offense, so we thought that it would be an interesting idea to 
-```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE,  fig.height=5, fig.width=7, fig.align='center'}
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE,  fig.height=4, fig.width=7, fig.align='center'}
 
 grid.newpage()
 ly <- grid.layout(1, 2)
