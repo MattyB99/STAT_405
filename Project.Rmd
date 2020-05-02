@@ -178,6 +178,24 @@ Parking_Citations %>%
 ```
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
+#Violation Description by Body Style Description
+Parking_Citations %>%
+  filter(Body.Style.Description != "", !is.na(Violation.Description)) %>%
+  subset(Violation.Description == "NO PARK/STREET CLEAN" | 
+           Violation.Description == "METER EXP." | 
+           Violation.Description == "RED ZONE" | 
+           Violation.Description == "PREFERENTIAL PARKING" | 
+           Violation.Description =="DISPLAY OF TABLS" | 
+           Violation.Description == "NO PARKING") %>% 
+  ggplot() + 
+  aes(x = Body.Style.Description, fill = Violation.Description) +
+  geom_bar(position = "fill") + 
+  labs(title = "Percent of Different Violations by Vehicle Type", x = "Vehicle Type", y = "Proportion of Violation Type") +
+  coord_flip()
+
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 #Average fine by Body.Style
 
 grid.newpage()
@@ -228,6 +246,7 @@ print(c, vp = viewport(layout.pos.row = 2, layout.pos.col = 1))
 
 popViewport(1)
 ```
+
 
 #### Where do parking violations occur?
 
