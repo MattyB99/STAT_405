@@ -1,9 +1,7 @@
 ---
-title: "Parking Violations in LA"
+title: "Your Project Title"
 author: "Matthew Barclay, Griffin Coccari, Alex Gallegos, Anushi Singhal"
-output: pdf_document:
-  toc: true
-  theme: united
+output: pdf_document
 fontsize: 10pt
 geometry: margin=1in
 ---
@@ -577,8 +575,9 @@ As seen in the plot, not only did we find no evidence of citation frequency ramp
 #### Conclusions
 we did traditional analysis but also looked at the dataset from different angles
 
-The Parking Citaitons Analysis evolved into more than just a matter of counting. Our first graphs uncovered startling statistics about prices and fines. When looking at the most cited color and car types, our analysis revealed that special vehicles like ambulances, golf carts, forklifts, and tankers also were subject to Los Angeles parking enforcement. Excited by the potential of what this dataset offered, we saught to use complementary datasets to dive deeper into the socio-economic, cultural, and geographical effects on Los Angeles parking Citations. 
+  The Parking Citaitons Analysis evolved into more than just a matter of counting. Our first graphs uncovered startling statistics about prices and fines. When looking at the most cited color and car types, our analysis revealed that special vehicles like ambulances, golf carts, forklifts, and tankers also were subject to Los Angeles parking enforcement. Excited by the potential of what this dataset offered, we saught to use complementary datasets to dive deeper into the socio-economic, cultural, and geographical effects on Los Angeles parking Citations. 
 
+  The analysis also 
 
 ##### References:
 1. https://la.streetsblog.org/2010/12/13/density-car-ownership-and-what-it-means-for-the-future-of-los-angeles/  
