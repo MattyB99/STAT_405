@@ -1,9 +1,11 @@
 ---
-title: "Parking Violations in LA"
+title: "Your Project Title"
 author: "Matthew Barclay, Griffin Coccari, Alex Gallegos, Anushi Singhal"
-output: pdf_document:
-  toc: true
-  theme: united
+output: pdf_document
+toc: true
+toc_depth: 3
+number_sections: true
+theme: united
 fontsize: 10pt
 geometry: margin=1in
 ---
@@ -134,11 +136,11 @@ Parking_Citations %>%
   theme(axis.text.x.bottom = element_text(hjust = 1, angle = 45, size = 8))
 ```
 
-#### Who receives parking citations?
+### Who receives parking citations?
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
 ggplot(map_data("state")%>%left_join(Parking_Citations%>%group_by(RP.State.Plate)%>%summarise(count = n())%>%left_join(read.csv('statename.csv'))%>%filter(!is.na(region), region != "california"))) + aes(long, lat, group = group) +
-  geom_polygon(aes(fill = count), color = "white") + scale_fill_viridis_c(option = "C") + theme_void() + theme(legend.position = c(.1, .17)) +
+  geom_polygon(aes(fill = count), color = "white") + scale_fill_viridis_c(option = "C") + theme_void() + theme(legend.position = c(.11, .165)) +
   labs(fill = "Number of Citations", title = "Number of Citations for Vehicles with Out of State Registration")
 ```
 
@@ -250,7 +252,7 @@ popViewport(1)
 ```
 
 
-#### Where do parking violations occur?
+### Where do parking violations occur?
 
 ```{r lat/lon, eval=FALSE, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
 #will not run with eval = FALSE
@@ -409,7 +411,7 @@ crimeMap <- ggmap(map) +
 
 ##### Does weather or crime affect the parking convictions overall?
   In our investigation of how parking citations are distributed across the city of LA, we wondered how crime data and potentially weather data would fit in with our parking citations data. We used 2 SQL databases of both LA weather and LA crime to compare with our initial data. By using a heatmap on the city of LA with out data we can see different concentrations of crime, weather, etc., and in conjunction with our initial dataset we can see if there are any correlations between crime, weather, and our parking citations. 
-```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE,  fig.height=5, fig.width=7, fig.align='center'}
 
 grid.newpage()
 ly <- grid.layout(1, 3)
@@ -424,7 +426,7 @@ The graphs show the density of parking citations in LA, the density of parking c
 
 ###### Crime and its effect
 The crime map does account for overall crime regardless of severity, so we thought that it would be a good idea to rate the crime by severity. In our data for crime, we are supplied with crime codes that indicate the type of crime commited. Because the crime codes are known and this is a database of reported crimes for LA we can assume that this would give a fairly accurate map of crime activity in LA. We also made the assumption that if there is more crime in an area it is more likely that there is increased police activity in that area, and therefore more citations can be given. Crime codes are on a numeric scale where the lower the crime code number, the more severe the offense, so we thought that it would be an interesting idea to 
-```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE,  fig.height=5, fig.width=7, fig.align='center'}
 
 grid.newpage()
 ly <- grid.layout(1, 2)
@@ -439,17 +441,13 @@ print(badCrimeMap, vp = viewport(layout.pos.row = 1, layout.pos.col = 2))
   Using our crime database we can find the demographics by crime and see in which areas crime happens based on demographic. By plotting these maps we can find demographic data by region which we can use to see whether or not there are demographic differences in parking citations frequency.
   
   
-```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE, fig.height=5, fig.width=7, fig.align='center'}
 demMap
 ```
   Using this data, we can see that every one of our ethnicities does go around the central downtown LA area. We also see certain trends with our severe crime data. People of Black descent appear to be closer in proximity to the severe crime hotspot and people of Chinese descent appear to be further from the more severe crimes in the area. When we compare to parking citations it would suggest not only that crime has no effect on parking citations, but also that demographics does not necessarily contribute to frequency of citations and certain areas may not more likely to receive citations because of their ethnic makeup. 
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
-demMap
-```
 
-
-#### When do violations occur?  
+### When do violations occur?  
 
 
 ###### Holiday Parking  
@@ -579,13 +577,13 @@ Parking_Citations%>%mutate(day_of_month = format(as.Date(Issue.Date, format = "%
 As seen in the plot, not only did we find no evidence of citation frequency ramping up toward the end of the month, we found that citation frequency tends to remain relatively stable. The extremely low frequency on days that are the 31^st^ of the month is caused by only 7 out of 12 months having 31 days.
 
 
-#### Conclusions
-we did traditional analysis but also looked at the dataset from different angles
+### Conclusions
 
 The Parking Citaitons Analysis evolved into more than just a matter of counting. Our first graphs uncovered startling statistics about prices and fines. When looking at the most cited color and car types, our analysis revealed that special vehicles like ambulances, golf carts, forklifts, and tankers also were subject to Los Angeles parking enforcement. Excited by the potential of what this dataset offered, we used complementary datasets to dive deeper into the socio-economic, cultural, and meteorological effects on Los Angeles parking Citations. More than just viewing the dataset at face value, we saw how parking ciations explained larger picture characteristics about the city of Los Angeles, but especially in regards to traffic and parking citaitons. At every turn, we discovered new, unique insights, which, even if they had less cohesiveness together than we had hoped, opened up even greater questions
 
 
-##### References:
+  The analysis also 
+
 1.
 Newton, Damien, et al. “Density, Car Ownership, and What It Means for the Future of Los Angeles.” Streetsblog Los Angeles, 13 Dec. 2010, la.streetsblog.org/2010/12/13/density-car-ownership-and-what-it-means-for-the-future-of-los-angeles/.
 
@@ -594,6 +592,7 @@ Newton, Damien, et al. “Density, Car Ownership, and What It Means for the Futu
 
 3.
 “Parking Citations: Los Angeles - Open Data Portal.” Data.lacity.org, 13 Feb. 2020, data.lacity.org/A-Well-Run-City/Parking-Citations/wjz9-h9np.
+
 
 
 
