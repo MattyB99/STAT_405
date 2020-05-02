@@ -61,7 +61,8 @@ if(!knitr::is_html_output()) {knitr::include_graphics("3D_Map.png") }
   The raw data was accessed directly from the City of Los Angeles Department of Transportation (LADOT) through the city's Open Data website^2^. The original data set contained 9.97 million rows, each containing details on one parking violation. We identified the fine amount and location data as the most important variables and therefore removed all rows containing empty or NA values in those two columns. This narrowed the amount of rows to about 8.5 million. LADOT uses US Feet coordinates according to the NAD_1983_StatePlane_California projection, which is not easily comparable to standard latitude and longitude values, so our next step was to use **sp** package for R to transform our location data. Our final cleaned data set contained data on 8,502,692 tickets, including information of the time, date, location, vehicle information, parking offense, and more. Although well over the 1 milion row minimum requirement, this large amount of data will allow us to explore the trends in parking violations in LA over a relatively large time frame.  
    
    
-***   
+***    
+  
 #### Overview graphs
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
@@ -91,28 +92,37 @@ grid.points(x[8:11], y[8:11], pch = 25, size=unit(0.025, "npc"), gp=gpar(fill="g
 popViewport(2)
 ```
 
-When we began our analysis, we had to get some idea of what we were dealing with. With no instructions, We first boiled down the data into a more understandble form. The data gave us a good amount of information, and it also gave us a good starting point. The data showed a skewed distrubution over 11 year span. From 2010 to 2014 there were less than 40 parking citations recorded. In 2014 that number increased to 34,000. After that, we saw a drastic 44 percent change into 2015, when 1,541,535 parking citations were recorded. The count peaked at 2,154,321 citations in 2017. This peak accentuated both the steep rise leading up to 2017 and also the suprisingly steep decline afterwards. While this graph gave us a good handle on the numbers, there were questions unanswered about the data collection.The  drastic increase from 2014-2015 may be explained by an attempt by the City of Los Angeles to digitize their citations. But that explanation is contradicted by the equally sharp decline after 2017. This left the question of how many citations did they actually collect? The graph didn't tell us exactly, but it gives us a range of values that captures the true value or something close. Even without the actual answer, this graph highlighted the magnitude of the citaitons in LA.
-#### Basic Graphs
+When we began our analysis, we had to get some idea of what we were dealing with. With no instructions, we first boiled down the data into a more understandble form. The data gave us a good amount of information, and it also gave us a good starting point. The data showed a skewed distrubution over 11 year span. From 2010 to 2014 there were less than 40 parking citations recorded. In 2014 that number increased to 34,000. After that, we saw a drastic 44 percent change into 2015, when 1,541,535 parking citations were recorded. The count peaked at 2,154,321 citations in 2017. This peak accentuated both the steep rise leading up to 2017 and also the suprisingly steep decline afterwards. While this graph gave us a good handle on the numbers, there were questions unanswered about the data collection.The  drastic increase from 2014-2015 may be explained by an attempt by the City of Los Angeles to digitize their citations. But that explanation is contradicted by the equally sharp decline after 2017. This left the question of how many citations did they actually collect? The graph didn't tell us exactly, but it gives us a range of values that captures the true value or something close. Even without the actual answer, this graph highlighted the magnitude of the citaitons in LA.  
+
 ```{r dollars per year, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
 data.frame(Year=c(seq(from=2010, to=2020, by=1), "Total"),
          "Dollars_Collected" =c(730, 630, 2276, 3062, 2371400, 107172874, 130124585,151608139,124738695,75291586,2275, sum(c(730, 630, 2276, 3062, 2371400, 107172874, 130124585,151608139,124738695,75291586,2275))))%>%knitr::kable()
-
+```
+  
+  Los Angeles is not just a city with horrible traffic, it's also a city where it is terribly hard to park, especially in tourist areas, shopping districts, or other special zones. Over the past decade, the City of Los Angeles collected $591,316,252 digitally.   
+    
+```{r, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
 Parking_Citations%>%
   group_by(Violation.Description)%>%
   summarise(count=n())->violations
 ##price of most violated and then max fine amount
-
-
+```
+```{r, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
 data.frame(Top_Violations= c("NO PARK/STREET CLEAN", "METER EXP", "RED ZONE"), Count=c(2389114, 1634877, 635504), fine_amount=c(73,63,93)) %>%
   knitr::kable()
 ## red curb just means no stopping, parking, or standing 
-
+```
+  
+  This table explains that the top three violations are parking in a street clean area, parking with an experied meter, and parking in a red zone. Street Cleaning happens every day in Los Angeles, albeit on different sides of the roads depending on the day of the week. Because the side of the street that is cleaned changes on a daily bases, many people are caught parking on the wrong side of the road and are penalized. People who are in a hurry, who do know the law, sometimes ignore it or assume that the street cleaner has passed or won't come and are also penalized frequently. Parking in a red zone is The City of Los Ageles's third most frequently cited violation. A red curb, or red zone, indicates no parking, standing or stopping for public safety reasons^3^.  Parking violations vary in their severity. Violating a red zone parking law is a public safety issue, so the fine is more expensive than that of a meter experation ticket, which is stil very expensive! At the very least, do not get caught parking in a disabled vehicle designated spot without reason. That fine will cost you 1100 dollars. 
+    
+```{r, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
 ##maximum fine
 Parking_Citations%>%
  select(Violation.Description, Fine.amount)%>%
   filter(Fine.amount ==1100)%>%
   filter(Violation.Description=="DP- RO NOT PRESENT")%>%head(1)%>%knitr::kable()
-
+```
+```{r, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
 ## the maximum fine amount is for parking in a disabled parking spot with no DP registration
 
 
@@ -127,8 +137,8 @@ Parking_Citations %>%
 
 ```
     
-  Los Angeles is not just a city with horrible traffic, it's also a city where it is terribly hard to park, especially in tourist areas, shopping districts, or other special zones. Over the past decade, The City of Los Angeles collected $591,316,252 digitally. The amount of dollars collected mimicks the movement in the previous graph of citations byt year Our Top_Violations table explains that the top three violations are parking in a street clean area, parking with an experied meter, and parking in a red zone. Street Cleaning happens every day in Los Angeles, albeit on different sides of the roads depending on the day of the week. Because the side of the street that is cleaned changes on a daily bases, many people are caught parking on the wrong side of the road and are penalized. People who are in a hurry, who do know the law, sometimes ignore it or assume that the street cleaner has passed or won't come and are also penalized frequently. Parking in a red zone is The City of Los Ageles's third most frequently cited violation. A red curb, or red zone, indicates no parking, standing or stopping for public safety reasons^3^.  Parking violations vary in their severity. Violating a red zone parking law is a public safety issue, so the fine is more expensive than that of a meter experation ticket, which is stil very expensive! At the very least, do not get caught parking in a disabled vehicle designated spot without reason. That fine will cost you 1100 dollars. 
-  Parking citations by location indicated where the most violations have occured. These violations happen in major hotspots of the city which have heavy tourist footraffick and very little space. The lack of parking forces people to park in residential areas, where there are high chances of fines. 1301 ELectric Ave is a street where people park to visit Long Beach, California's famous Seal Beach. Irving Court is very close to a the Venice Beach boardwalk and the Abbot Keny shopping district. Hawthorne Avenue is the spot just south of the bustling Hollyword Blvd. Among these hotspots is also The Griffith Observatory. These Los Angeles must sees attract more cars and tourists than an area can hold and so are, unsuprisingly, the locations with the most cited violations.
+ 
+  Parking citations by location indicated where the most violations have occured. These violations happen in major hotspots of the city which have heavy tourist footraffick and very little space. The lack of parking forces people to park in residential areas, where there are high chances of fines. 1301 ELectric Ave is a street where people park to visit Long Beach, California's famous Seal Beach. Irving Court is very close to a the Venice Beach boardwalk and the Abbot Keny shopping district. Hawthorne Avenue is the spot just south of the bustling Hollyword Blvd. Among these hotspots is also The Griffith Observatory. These Los Angeles must-sees attract more cars and tourists and so are, unsuprisingly, the locations with the most cited violations.
 
 
 ```{r cleanup, eval=FALSE, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
@@ -155,7 +165,7 @@ ggplot(map_data("state")%>%left_join(Parking_Citations%>%group_by(RP.State.Plate
 
   Although only around 1.5 million out of the 8.5 million violations we looked at were for out-of-state vehicles, we wanted to know what the distribution of these vehicles was. The fact that Arizona had the highest count seems logical given its close proximity to LA. This same reasoning could also explain the high concentration of vehicles from both Nevada and Texas. Although Oregon and Washington border the opposite side of California, the overall increased travel between the west coast states could account for these findings. On the other hand, the obvious outlier Florida was much higher than its neighboring states but this could either be coincidental or due to the higher volume of travel from this state. 
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE, out.width="0.65\\linewidth", out.height="0.65\\linewidth", fig.align="center"}
 #Average fine amount by car Color
 Parking_Citations %>% 
   filter(!is.na(Fine.amount), !is.na(Color)) %>%
@@ -553,7 +563,7 @@ Our analysis found a striking difference between the fine amounts for holidays. 
 ###### Days of the Week  
   While analyzing which day of the week elicited the most citations, we also decided to group by the season of the year to see if that would affect the total volume of citations issued.  
   
-```{r that time of the week, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
+```{r that time of the week, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE, out.width="0.85\\linewidth", out.height="0.85\\linewidth", fig.align="center"}
 
 Parking_Citations%>%mutate(day_of_month = format(as.Date(Issue.Date, format = "%m/%d/%Y"), format="%u"))%>%
   mutate(month = as.integer(format(as.Date(Issue.Date, format = "%m/%d/%Y"), format="%m")))%>%
@@ -583,7 +593,7 @@ The greatest frequency of citations were issued between 8:00am and 2:00pm, with 
 
 ###### Quotas
 It is a common misconception that ticket frequencies increase at the end of each month as many people believe that officers have monthly quotas to fill. We explored whether an increase in ticket frequency was observed at the end of the month by plotting the total count of tickets for each day of the month for all months.
-```{r that time of the month, echo=FALSE, fig.height=4, message=FALSE, warning=FALSE, cache=TRUE, fig.align="center}
+```{r that time of the month, echo=FALSE, fig.height=4, message=FALSE, warning=FALSE, cache=TRUE, fig.align="center"}
 Parking_Citations%>%mutate(day_of_month = format(as.Date(Issue.Date, format = "%m/%d/%Y"), format="%d"))%>%
   ggplot() +aes(x = day_of_month, fill = day_of_month)+ geom_bar() + labs(x = "Day of the Month", y = "Total Number of Citations", title = "Citations over the Month") + scale_fill_manual(values = c(rep("dark green", 27), rep("red", 4))) + guides(fill = FALSE)
 
@@ -613,6 +623,9 @@ Newton, Damien, et al. “Density, Car Ownership, and What It Means for the Futu
 
 3.
 “Colored Curb Zones.” LADOT, ladot.lacity.org/residents/colored-curb-zones.
+
+4.
+Photos were obtained from the following websites: imgbin.com, pngguru.com, logodix.com, hiclipart.com, pngfuel.com, pikpng.com, and cleanpng.com
 
 
 
